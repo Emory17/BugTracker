@@ -7,13 +7,19 @@ namespace BugTracker.Models
         public int Id { get; set; }
 
         [Required]
+        [StringLength(200, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
         public string? Title { get; set; }
 
         [Required]
+        [StringLength(600, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
         public string? Description { get; set; }
 
+        [DataType(DataType.Date)]
         public DateTime Created { get; set; }
+
+        [DataType(DataType.Date)]
         public DateTime? Updated { get; set;}
+
         public bool Archived { get; set; }
         public bool ArchivedByProject { get; set; }
 

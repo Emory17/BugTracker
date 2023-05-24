@@ -6,21 +6,31 @@ namespace BugTracker.Models
     {
         public int Id { get; set; }
 
+        [DataType(DataType.Date)]
         public DateTime InviteDate { get; set; }
+
+        [DataType(DataType.Date)]
         public DateTime? JoinDate { get; set; }
+
         public Guid CompanyToken { get; set; }
 
         [Required]
+        [Display(Name = "Email Address")]
+        [DataType(DataType.EmailAddress)]
         public string? InviteeEmail { get; set; }
 
         [Required]
+        [Display(Name = "First Name")]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? InviteeFirstName{ get; set; }
 
         [Required]
+        [Display(Name = "Last Name")]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? InviteeLastName { get; set; }
 
         public string? Message { get; set; }
-        public bool IdValid { get; set; }
+        public bool IsValid { get; set; }
 
         //Foreign Keys
         public int CompanyId { get; set; }
@@ -28,7 +38,7 @@ namespace BugTracker.Models
         public string? InviteeId { get; set;}
 
         [Required]
-        public string? InvitorID { get; set; }
+        public string? InvitorId { get; set; }
 
         //Navigation
         public virtual Company? Company { get; set; }

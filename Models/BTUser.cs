@@ -7,9 +7,13 @@ namespace BugTracker.Models
     public class BTUser : IdentityUser
     {
         [Required]
+        [Display(Name = "First Name")]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? FirstName { get; set; }
 
         [Required]
+        [Display(Name = "Last Name")]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? LastName { get; set; }
 
         [NotMapped]
@@ -25,7 +29,7 @@ namespace BugTracker.Models
         public int CompanyId { get; set; }
 
         //Navigation
-        public Company? Company { get; set; }
-        public ICollection<Project> Projects { get; set; } = new HashSet<Project>();
+        public virtual Company? Company { get; set; }
+        public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();
     }
 }

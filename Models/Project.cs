@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BugTracker.Models
 {
@@ -6,11 +7,23 @@ namespace BugTracker.Models
     {
         public int Id { get; set; }
 
+        [Required]
+        [StringLength(200, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
         public string? Name { get; set; }
+
+        [Required]
+        [StringLength(600, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
         public string? Description { get; set; }
-        public DateTime CreatedDate { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime Created { get; set; }
+
+        [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
+
+        [DataType(DataType.Date)]
         public DateTime EndDate { get; set;}
+
         public bool Archived { get; set; }
 
         //Image

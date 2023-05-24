@@ -7,14 +7,17 @@ namespace BugTracker.Models
     {
         public int Id { get; set; }
 
+        [StringLength(600, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
         public string? Description { get; set; }
+
+        [DataType(DataType.Date)]
         public DateTime Created { get; set; }
 
         //Image
         [NotMapped]
-        public IFormFile? ImageFormFile { get; set; }
-        public byte[]? ImageFileData { get; set; }
-        public string? ImageFileType { get; set; }
+        public IFormFile? FormFile { get; set; }
+        public byte[]? FileData { get; set; }
+        public string? FileType { get; set; }
 
         //Foreign Keys
         public int TicketId { get; set; }
