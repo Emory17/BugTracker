@@ -10,6 +10,7 @@ namespace BugTracker.Models
         public string? Comment { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Created Date")]
         public DateTime Created { get; set; }
 
         //Foreign Keys

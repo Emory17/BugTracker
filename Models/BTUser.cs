@@ -17,10 +17,12 @@ namespace BugTracker.Models
         public string? LastName { get; set; }
 
         [NotMapped]
+        [Display(Name = "Full Name")]
         public string? FullName { get { return $"{FirstName} {LastName}"; } }
 
         //Image
         [NotMapped]
+        [Display(Name = "User Image")]
         public IFormFile? ImageFormFile { get; set; }
         public byte[]? ImageFileData { get; set; }
         public string? ImageFileType { get; set; }

@@ -9,6 +9,7 @@ namespace BugTracker.Models
 
         [Required]
         [StringLength(200, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
+        [Display(Name = "Company Name")]
         public string? Name { get; set; }
 
         [StringLength(600, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
@@ -16,6 +17,7 @@ namespace BugTracker.Models
 
         //Image
         [NotMapped]
+        [Display(Name = "Company Image")]
         public IFormFile? ImageFormFile { get; set; }
         public byte[]? ImageFileData { get; set; }
         public string? ImageFileType { get; set; }

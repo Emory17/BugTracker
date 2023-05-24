@@ -7,11 +7,14 @@ namespace BugTracker.Models
         public int Id { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Invite Date")]
         public DateTime InviteDate { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Join Date")]
         public DateTime? JoinDate { get; set; }
 
+        [Display(Name = "Company Token")]
         public Guid CompanyToken { get; set; }
 
         [Required]
@@ -30,6 +33,8 @@ namespace BugTracker.Models
         public string? InviteeLastName { get; set; }
 
         public string? Message { get; set; }
+
+        [Display(Name = "Valid?")]
         public bool IsValid { get; set; }
 
         //Foreign Keys

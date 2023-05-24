@@ -11,10 +11,12 @@ namespace BugTracker.Models
         public string? Description { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Created Date")]
         public DateTime Created { get; set; }
 
         //Image
         [NotMapped]
+        [Display(Name = "Attached File")]
         public IFormFile? FormFile { get; set; }
         public byte[]? FileData { get; set; }
         public string? FileType { get; set; }

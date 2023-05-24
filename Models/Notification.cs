@@ -14,8 +14,10 @@ namespace BugTracker.Models
         public string? Message { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Created Date")]
         public DateTime Created { get; set; }
 
+        [Display(Name = "Viewed?")]
         public bool HasBeenViewed { get; set; }
 
         //Foreign Keys
