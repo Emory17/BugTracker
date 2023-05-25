@@ -22,19 +22,19 @@ namespace BugTracker.Controllers
         // GET: TicketAttachments
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.TicketAttachment.Include(t => t.BTUser).Include(t => t.Ticket);
+            var applicationDbContext = _context.TicketAttachments.Include(t => t.BTUser).Include(t => t.Ticket);
             return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: TicketAttachments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.TicketAttachment == null)
+            if (id == null || _context.TicketAttachments == null)
             {
                 return NotFound();
             }
 
-            var ticketAttachment = await _context.TicketAttachment
+            var ticketAttachment = await _context.TicketAttachments
                 .Include(t => t.BTUser)
                 .Include(t => t.Ticket)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -49,8 +49,8 @@ namespace BugTracker.Controllers
         // GET: TicketAttachments/Create
         public IActionResult Create()
         {
-            ViewData["BTUserId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id");
-            ViewData["TicketId"] = new SelectList(_context.Ticket, "Id", "Description");
+            ViewData["BTUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description");
             return View();
         }
 
@@ -67,26 +67,26 @@ namespace BugTracker.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BTUserId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", ticketAttachment.BTUserId);
-            ViewData["TicketId"] = new SelectList(_context.Ticket, "Id", "Description", ticketAttachment.TicketId);
+            ViewData["BTUserId"] = new SelectList(_context.Users, "Id", "Id", ticketAttachment.BTUserId);
+            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", ticketAttachment.TicketId);
             return View(ticketAttachment);
         }
 
         // GET: TicketAttachments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.TicketAttachment == null)
+            if (id == null || _context.TicketAttachments == null)
             {
                 return NotFound();
             }
 
-            var ticketAttachment = await _context.TicketAttachment.FindAsync(id);
+            var ticketAttachment = await _context.TicketAttachments.FindAsync(id);
             if (ticketAttachment == null)
             {
                 return NotFound();
             }
-            ViewData["BTUserId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", ticketAttachment.BTUserId);
-            ViewData["TicketId"] = new SelectList(_context.Ticket, "Id", "Description", ticketAttachment.TicketId);
+            ViewData["BTUserId"] = new SelectList(_context.Users, "Id", "Id", ticketAttachment.BTUserId);
+            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", ticketAttachment.TicketId);
             return View(ticketAttachment);
         }
 
@@ -122,20 +122,20 @@ namespace BugTracker.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BTUserId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", ticketAttachment.BTUserId);
-            ViewData["TicketId"] = new SelectList(_context.Ticket, "Id", "Description", ticketAttachment.TicketId);
+            ViewData["BTUserId"] = new SelectList(_context.Users, "Id", "Id", ticketAttachment.BTUserId);
+            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", ticketAttachment.TicketId);
             return View(ticketAttachment);
         }
 
         // GET: TicketAttachments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.TicketAttachment == null)
+            if (id == null || _context.TicketAttachments == null)
             {
                 return NotFound();
             }
 
-            var ticketAttachment = await _context.TicketAttachment
+            var ticketAttachment = await _context.TicketAttachments
                 .Include(t => t.BTUser)
                 .Include(t => t.Ticket)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -152,14 +152,14 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.TicketAttachment == null)
+            if (_context.TicketAttachments == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.TicketAttachment'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.TicketAttachments'  is null.");
             }
-            var ticketAttachment = await _context.TicketAttachment.FindAsync(id);
+            var ticketAttachment = await _context.TicketAttachments.FindAsync(id);
             if (ticketAttachment != null)
             {
-                _context.TicketAttachment.Remove(ticketAttachment);
+                _context.TicketAttachments.Remove(ticketAttachment);
             }
 
             await _context.SaveChangesAsync();
@@ -168,7 +168,7 @@ namespace BugTracker.Controllers
 
         private bool TicketAttachmentExists(int id)
         {
-            return (_context.TicketAttachment?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.TicketAttachments?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -4,20 +4,25 @@ using BugTracker.Models;
 
 namespace BugTracker.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<BTUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-        public DbSet<BugTracker.Models.Company> Company { get; set; } = default!;
-        public DbSet<BugTracker.Models.Invite> Invite { get; set; } = default!;
-        public DbSet<BugTracker.Models.Notification> Notification { get; set; } = default!;
-        public DbSet<BugTracker.Models.NotificationType> NotificationType { get; set; } = default!;
-        public DbSet<BugTracker.Models.Project> Project { get; set; } = default!;
-        public DbSet<BugTracker.Models.Ticket> Ticket { get; set; } = default!;
-        public DbSet<BugTracker.Models.TicketAttachment> TicketAttachment { get; set; } = default!;
-        public DbSet<BugTracker.Models.TicketComment> TicketComment { get; set; } = default!;
-        public DbSet<BugTracker.Models.TicketHistory> TicketHistory { get; set; } = default!;
+                
+        public DbSet<Company> Companies { get; set; } = default!;
+        public DbSet<Invite> Invites { get; set; } = default!;
+        public DbSet<Notification> Notifications { get; set; } = default!;
+        public DbSet<NotificationType> NotificationTypes { get; set; } = default!;
+        public DbSet<Project> Projects { get; set; } = default!;
+        public DbSet<ProjectPriority> ProjectPriorities { get; set; } = default!;
+        public DbSet<Ticket> Tickets { get; set; } = default!;
+        public DbSet<TicketAttachment> TicketAttachments { get; set; } = default!;
+        public DbSet<TicketComment> TicketComments { get; set; } = default!;
+        public DbSet<TicketHistory> TicketHistories { get; set; } = default!;
+        public DbSet<TicketPriority> TicketPriorities { get; set; } = default!;
+        public DbSet<TicketStatus> TicketStatuses { get; set; } = default!;
+        public DbSet<TicketType> TicketTypes { get; set; } = default!;
     }
 }

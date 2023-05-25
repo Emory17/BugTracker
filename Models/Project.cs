@@ -13,7 +13,6 @@ namespace BugTracker.Models
         public string? Name { get; set; }
 
         [Required]
-        [StringLength(600, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
         public string? Description { get; set; }
 
         [DataType(DataType.Date)]

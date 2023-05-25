@@ -22,19 +22,19 @@ namespace BugTracker.Controllers
         // GET: Notifications
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Notification.Include(n => n.NotificationType).Include(n => n.Project).Include(n => n.Recipient).Include(n => n.Sender).Include(n => n.Ticket);
+            var applicationDbContext = _context.Notifications.Include(n => n.NotificationType).Include(n => n.Project).Include(n => n.Recipient).Include(n => n.Sender).Include(n => n.Ticket);
             return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Notifications/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Notification == null)
+            if (id == null || _context.Notifications == null)
             {
                 return NotFound();
             }
 
-            var notification = await _context.Notification
+            var notification = await _context.Notifications
                 .Include(n => n.NotificationType)
                 .Include(n => n.Project)
                 .Include(n => n.Recipient)
@@ -52,11 +52,11 @@ namespace BugTracker.Controllers
         // GET: Notifications/Create
         public IActionResult Create()
         {
-            ViewData["NotificationTypeId"] = new SelectList(_context.Set<NotificationType>(), "Id", "Id");
-            ViewData["ProjectId"] = new SelectList(_context.Set<Project>(), "Id", "Description");
-            ViewData["RecipientId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id");
-            ViewData["SenderId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id");
-            ViewData["TicketId"] = new SelectList(_context.Set<Ticket>(), "Id", "Description");
+            ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Id");
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description");
+            ViewData["RecipientId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description");
             return View();
         }
 
@@ -73,32 +73,32 @@ namespace BugTracker.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["NotificationTypeId"] = new SelectList(_context.Set<NotificationType>(), "Id", "Id", notification.NotificationTypeId);
-            ViewData["ProjectId"] = new SelectList(_context.Set<Project>(), "Id", "Description", notification.ProjectId);
-            ViewData["RecipientId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", notification.RecipientId);
-            ViewData["SenderId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", notification.SenderId);
-            ViewData["TicketId"] = new SelectList(_context.Set<Ticket>(), "Id", "Description", notification.TicketId);
+            ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Id", notification.NotificationTypeId);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", notification.ProjectId);
+            ViewData["RecipientId"] = new SelectList(_context.Users, "Id", "Id", notification.RecipientId);
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "Id", notification.SenderId);
+            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", notification.TicketId);
             return View(notification);
         }
 
         // GET: Notifications/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Notification == null)
+            if (id == null || _context.Notifications == null)
             {
                 return NotFound();
             }
 
-            var notification = await _context.Notification.FindAsync(id);
+            var notification = await _context.Notifications.FindAsync(id);
             if (notification == null)
             {
                 return NotFound();
             }
-            ViewData["NotificationTypeId"] = new SelectList(_context.Set<NotificationType>(), "Id", "Id", notification.NotificationTypeId);
-            ViewData["ProjectId"] = new SelectList(_context.Set<Project>(), "Id", "Description", notification.ProjectId);
-            ViewData["RecipientId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", notification.RecipientId);
-            ViewData["SenderId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", notification.SenderId);
-            ViewData["TicketId"] = new SelectList(_context.Set<Ticket>(), "Id", "Description", notification.TicketId);
+            ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Id", notification.NotificationTypeId);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", notification.ProjectId);
+            ViewData["RecipientId"] = new SelectList(_context.Users, "Id", "Id", notification.RecipientId);
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "Id", notification.SenderId);
+            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", notification.TicketId);
             return View(notification);
         }
 
@@ -134,23 +134,23 @@ namespace BugTracker.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["NotificationTypeId"] = new SelectList(_context.Set<NotificationType>(), "Id", "Id", notification.NotificationTypeId);
-            ViewData["ProjectId"] = new SelectList(_context.Set<Project>(), "Id", "Description", notification.ProjectId);
-            ViewData["RecipientId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", notification.RecipientId);
-            ViewData["SenderId"] = new SelectList(_context.Set<BTUser>(), "Id", "Id", notification.SenderId);
-            ViewData["TicketId"] = new SelectList(_context.Set<Ticket>(), "Id", "Description", notification.TicketId);
+            ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Id", notification.NotificationTypeId);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", notification.ProjectId);
+            ViewData["RecipientId"] = new SelectList(_context.Users, "Id", "Id", notification.RecipientId);
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "Id", notification.SenderId);
+            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", notification.TicketId);
             return View(notification);
         }
 
         // GET: Notifications/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Notification == null)
+            if (id == null || _context.Notifications == null)
             {
                 return NotFound();
             }
 
-            var notification = await _context.Notification
+            var notification = await _context.Notifications
                 .Include(n => n.NotificationType)
                 .Include(n => n.Project)
                 .Include(n => n.Recipient)
@@ -170,14 +170,14 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Notification == null)
+            if (_context.Notifications == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Notification'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Notifications'  is null.");
             }
-            var notification = await _context.Notification.FindAsync(id);
+            var notification = await _context.Notifications.FindAsync(id);
             if (notification != null)
             {
-                _context.Notification.Remove(notification);
+                _context.Notifications.Remove(notification);
             }
 
             await _context.SaveChangesAsync();
@@ -186,7 +186,7 @@ namespace BugTracker.Controllers
 
         private bool NotificationExists(int id)
         {
-            return (_context.Notification?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Notifications?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
