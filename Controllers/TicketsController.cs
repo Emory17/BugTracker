@@ -82,11 +82,20 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> Create([Bind("Id,Title,Description,ProjectId,TicketTypeId,TicketPriorityId,DeveloperUserId")] Ticket ticket)
         {
             BTUser? user = await _userManager.GetUserAsync(User);
+            ModelState.Remove("SubmitterUserId");
+
+            
 
             if (ModelState.IsValid)
             {
-                ticket.Created = DateTime.UtcNow;
+                var project = await _context.Projects.Where(p => p.CompanyId == user!.CompanyId).FirstOrDefaultAsync(p => p.Id == ticket.ProjectId);
+                if (project == null)
+                {
+                    return NotFound();
+                }
 
+                ticket.Created = DateTime.UtcNow;
+                
                 ticket.SubmitterUserId = user!.Id;
 
                 TicketStatus? ticketStatus = await _context.TicketStatuses.FirstOrDefaultAsync(ts => ts.Name == BTTicketStatuses.New.ToString());
@@ -97,8 +106,6 @@ namespace BugTracker.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
-            
 
             ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.CompanyId == user!.CompanyId), "Id", "Name");
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
@@ -147,6 +154,13 @@ namespace BugTracker.Controllers
             {
                 try
                 {
+                    BTUser? user = await _userManager.GetUserAsync(User);
+                    var project = await _context.Projects.Where(p => p.CompanyId == user!.CompanyId).FirstOrDefaultAsync(p => p.Id == ticket.ProjectId);
+                    if (project == null)
+                    {
+                        return NotFound();
+                    }
+
                     ticket.Created = DateTime.SpecifyKind(ticket.Created, DateTimeKind.Utc);
                     ticket.Updated = DateTime.UtcNow;
 
@@ -213,6 +227,13 @@ namespace BugTracker.Controllers
             var ticket = await _context.Tickets.FindAsync(id);
             if (ticket != null)
             {
+                BTUser? user = await _userManager.GetUserAsync(User);
+                var project = await _context.Projects.Where(p => p.CompanyId == user!.CompanyId).FirstOrDefaultAsync(p => p.Id == ticket.ProjectId);
+                if (project == null)
+                {
+                    return NotFound();
+                }
+
                 ticket.Archived = true;
                 _context.Update(ticket);
             }

@@ -143,6 +143,12 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
+            BTUser? user = await _userManager.GetUserAsync(User);
+            if (project.CompanyId != user!.CompanyId)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -216,6 +222,12 @@ namespace BugTracker.Controllers
             var project = await _context.Projects.FindAsync(id);
             if (project != null)
             {
+                BTUser? user = await _userManager.GetUserAsync(User);
+                if (project.CompanyId != user!.CompanyId)
+                {
+                    return NotFound();
+                }
+
                 var ptickets = await _context.Tickets.Where(t => t.ProjectId == id).ToListAsync();
                 foreach(Ticket ticket in ptickets)
                 {
