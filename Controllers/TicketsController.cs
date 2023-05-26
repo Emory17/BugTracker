@@ -7,26 +7,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using BugTracker.Models.Enums;
 
 namespace BugTracker.Controllers
 {
     public class TicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BTUser> _userManager;
 
-        public TicketsController(ApplicationDbContext context)
+        public TicketsController(ApplicationDbContext context, UserManager<BTUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Tickets
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Tickets.Include(t => t.DeveloperUser).Include(t => t.Project).Include(t => t.TicketPriority).Include(t => t.TicketStatus).Include(t => t.TicketType);
+            BTUser? user = await _userManager.GetUserAsync(User);
+
+            var applicationDbContext = _context.Tickets.Include(t => t.Project).Where(t => t.Project!.CompanyId == user!.CompanyId).Include(t => t.DeveloperUser).Include(t => t.TicketPriority).Include(t => t.TicketStatus).Include(t => t.TicketType);
             return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Tickets/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Tickets == null)
@@ -34,12 +43,15 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
+            BTUser? user = await _userManager.GetUserAsync(User);
+
             var ticket = await _context.Tickets
-                .Include(t => t.DeveloperUser)
                 .Include(t => t.Project)
+                .Where(t => t.Project!.CompanyId == user!.CompanyId)
                 .Include(t => t.TicketPriority)
                 .Include(t => t.TicketStatus)
                 .Include(t => t.TicketType)
+                .Include(t => t.DeveloperUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
@@ -50,13 +62,14 @@ namespace BugTracker.Controllers
         }
 
         // GET: Tickets/Create
-        public IActionResult Create()
+        [Authorize]
+        public async Task<IActionResult> Create()
         {
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description");
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id");
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id");
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id");
+            BTUser? user = await _userManager.GetUserAsync(User);
+
+            ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.CompanyId == user!.CompanyId), "Id", "Name");
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name");
             return View();
         }
 
@@ -65,23 +78,37 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Created,Updated,Archived,ArchivedByProject,ProjectId,TicketTypeId,TicketStatusId,TicketPriorityId,DeveloperUserId")] Ticket ticket)
+        [Authorize]
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,ProjectId,TicketTypeId,TicketPriorityId,DeveloperUserId")] Ticket ticket)
         {
+            BTUser? user = await _userManager.GetUserAsync(User);
+
             if (ModelState.IsValid)
             {
+                ticket.Created = DateTime.UtcNow;
+
+                ticket.SubmitterUserId = user!.Id;
+
+                TicketStatus? ticketStatus = await _context.TicketStatuses.FirstOrDefaultAsync(ts => ts.Name == BTTicketStatuses.New.ToString());
+
+                ticket.TicketStatusId = ticketStatus!.Id;
+
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);
+
+            
+
+            ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.CompanyId == user!.CompanyId), "Id", "Name");
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name");
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name");
             return View(ticket);
         }
 
         // GET: Tickets/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Tickets == null)
@@ -89,16 +116,17 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.FindAsync(id);
+            BTUser? user = await _userManager.GetUserAsync(User);
+
+            var ticket = await _context.Tickets.Where(t => t.Project!.CompanyId == user!.CompanyId).FirstOrDefaultAsync(t => t.Id == id);
             if (ticket == null)
             {
                 return NotFound();
             }
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);
+
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name");
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name");
             return View(ticket);
         }
 
@@ -107,6 +135,7 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Created,Updated,Archived,ArchivedByProject,ProjectId,TicketTypeId,TicketStatusId,TicketPriorityId,DeveloperUserId")] Ticket ticket)
         {
             if (id != ticket.Id)
@@ -118,6 +147,9 @@ namespace BugTracker.Controllers
             {
                 try
                 {
+                    ticket.Created = DateTime.SpecifyKind(ticket.Created, DateTimeKind.Utc);
+                    ticket.Updated = DateTime.UtcNow;
+
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
@@ -134,15 +166,15 @@ namespace BugTracker.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);
+
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name");
             return View(ticket);
         }
 
         // GET: Tickets/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Tickets == null)
@@ -150,12 +182,15 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
+            BTUser? user = await _userManager.GetUserAsync(User);
+
             var ticket = await _context.Tickets
-                .Include(t => t.DeveloperUser)
                 .Include(t => t.Project)
+                .Where(t => t.Project!.CompanyId == user!.CompanyId)
                 .Include(t => t.TicketPriority)
                 .Include(t => t.TicketStatus)
                 .Include(t => t.TicketType)
+                .Include(t => t.DeveloperUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
@@ -168,6 +203,7 @@ namespace BugTracker.Controllers
         // POST: Tickets/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Tickets == null)
@@ -177,7 +213,8 @@ namespace BugTracker.Controllers
             var ticket = await _context.Tickets.FindAsync(id);
             if (ticket != null)
             {
-                _context.Tickets.Remove(ticket);
+                ticket.Archived = true;
+                _context.Update(ticket);
             }
 
             await _context.SaveChangesAsync();

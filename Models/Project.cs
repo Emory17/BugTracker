@@ -36,9 +36,12 @@ namespace BugTracker.Models
         public IFormFile? ImageFormFile { get; set; }
         public byte[]? ImageFileData { get; set; }
         public string? ImageFileType { get; set; }
-        
+
         //Foreign Keys
+        [Display(Name = "Company")]
         public int CompanyId { get; set; }
+
+        [Display(Name = "Priority")]
         public int ProjectPriorityId { get; set; }
 
         //Navigation

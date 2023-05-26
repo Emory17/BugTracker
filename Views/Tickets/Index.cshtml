@@ -42,9 +42,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.TicketStatus)
             </th>
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.DeveloperUser)
-            </th>
+            </th>*@
             <th></th>
         </tr>
     </thead>
@@ -70,24 +70,24 @@
                 @Html.DisplayFor(modelItem => item.ArchivedByProject)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Project.Description)
+                @Html.DisplayFor(modelItem => item.Project.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TicketPriority.Id)
+                @Html.DisplayFor(modelItem => item.TicketPriority.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TicketType.Id)
+                @Html.DisplayFor(modelItem => item.TicketType.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TicketStatus.Id)
+                @Html.DisplayFor(modelItem => item.TicketStatus.Name)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeveloperUser.Id)
-            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
+            </td>*@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Archive</a>
             </td>
         </tr>
 }
