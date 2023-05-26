@@ -216,7 +216,8 @@ namespace BugTracker.Controllers
             var project = await _context.Projects.FindAsync(id);
             if (project != null)
             {
-                foreach(Ticket ticket in project.Tickets)
+                var ptickets = await _context.Tickets.Where(t => t.ProjectId == id).ToListAsync();
+                foreach(Ticket ticket in ptickets)
                 {
                     ticket.ArchivedByProject = true;
                     _context.Update(ticket);
