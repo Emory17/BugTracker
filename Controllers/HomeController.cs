@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using BugTracker.Models;
+using BugTracker.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BugTracker.Controllers

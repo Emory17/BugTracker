@@ -10,6 +10,8 @@ namespace BugTracker.Services
         private readonly string _defaultCompanyImageSrc = "";
         private readonly string _defaultProjectImageSrc = "";
 
+        private readonly string[] suffixes = { "Bytes", "KB", "MB", "GB", "TB", "PB" };
+
         public string ConvertByteArrayToFile(byte[] fileData, string extension, DefaultImage defaultImage)
         {
             if (fileData is null)
@@ -43,6 +45,25 @@ namespace BugTracker.Services
             {
                 throw;
             }
+        }
+
+        public string GetFileIcon(string file)
+        {
+            string ext = Path.GetExtension(file).Replace(".", "");
+            return $"/img/contenttype/{ext}.png";
+        }
+
+
+        public string FormatFileSize(long bytes)
+        {
+            int counter = 0;
+            decimal number = bytes;
+            while (Math.Round(number / 1024) >= 1)
+            {
+                number /= 1024;
+                counter++;
+            }
+            return string.Format("{0:n1}{1}", number, suffixes[counter]);
         }
     }
 }

@@ -3,6 +3,7 @@
 @model IEnumerable<BugTracker.Models.Project>
 
 @inject IBTFileService _fileService;
+@inject IBTProjectService _projectService;
 
 @{
     ViewData["Title"] = "Index";
@@ -41,6 +42,9 @@
                 @Html.DisplayNameFor(model => model.Company)
             </th>
             <th>
+                Project Manager
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.ProjectPriority)
             </th>
             <th></th>
@@ -74,12 +78,27 @@
                 @Html.DisplayFor(modelItem => item.Company.Name)
             </td>
             <td>
+                @if(await _projectService.GetProjectManagerAsync(item.Id,item.CompanyId) is not null)
+                {
+                    <span>@((await _projectService.GetProjectManagerAsync(item.Id, item.CompanyId))!.FullName)</span>
+                }
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
+                @if(item.Archived)
+                {
+                    <a asp-action="Restore" asp-route-id="@item.Id">Restore</a>
+                }
+                else
+                {
+                    <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
+                }
+                <a asp-action="AssignPM" asp-route-id="@item.Id">Assign PM</a>
+                <a asp-action="EditMembers" asp-route-id="@item.Id">Edit Members</a>
             </td>
         </tr>
 }

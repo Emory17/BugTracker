@@ -42,9 +42,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.TicketStatus)
             </th>
-            @*<th>
+            <th>
                 @Html.DisplayNameFor(model => model.DeveloperUser)
-            </th>*@
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -81,13 +81,20 @@
             <td>
                 @Html.DisplayFor(modelItem => item.TicketStatus.Name)
             </td>
-            @*<td>
+            <td>
                 @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
-            </td>*@
+            </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
+                @if(item.Archived && !item.ArchivedByProject)
+                {
+                    <a asp-action="Restore" asp-route-id="@item.Id">Restore</a>
+                }
+                else if(!item.Archived)
+                {
+                    <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
+                }
             </td>
         </tr>
 }

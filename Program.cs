@@ -1,4 +1,5 @@
 using BugTracker.Data;
+using BugTracker.Extensions;
 using BugTracker.Models;
 using BugTracker.Services;
 using BugTracker.Services.Interfaces;
@@ -14,15 +15,19 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-
 builder.Services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddClaimsPrincipalFactory<BTUserClaimsPrincipalFactory>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
 builder.Services.AddMvc();
 
 builder.Services.AddScoped<IBTFileService, BTFileService>();
+builder.Services.AddScoped<IBTProjectService, BTProjectService>();
+builder.Services.AddScoped<IBTTicketService, BTTicketService>();
+builder.Services.AddScoped<IBTRolesService, BTRolesService>();
+builder.Services.AddScoped<IBTCompanyService, BTCompanyService>();
 
 var app = builder.Build();
 
