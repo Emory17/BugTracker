@@ -20,7 +20,7 @@
                             @*Description of Ticket*@
                             <p>@Model.Description</p>
                             <div class="my-3">
-                                <span style="font-size:small">Project: [Project Name]</span>
+                                <span style="font-size:small">Project: @Model.Project.Name</span>
                             </div>
                         </div>
                     </div>
@@ -32,11 +32,11 @@
                                 @*Project end date*@
                                 <li><strong>Deadline:</strong> <span class="">  @Model.Project!.EndDate.Date</</span></li>
                                 @*Ticket type*@
-                                <li><strong>Type:</strong> <span class="">  @Model.TicketType</span></li>
+                                <li><strong>Type:</strong> <span class="">  @Model.TicketType.Name</span></li>
                                 @*Ticket priority*@
-                                <li><strong>Priority:</strong> <span class="">  @Model.TicketPriority</span></li>
+                                <li><strong>Priority:</strong> <span class="">  @Model.TicketPriority.Name</span></li>
                                 @*Ticket status*@
-                                <li><strong>Status:</strong> <span class="">  @Model.TicketStatus</span></li>
+                                <li><strong>Status:</strong> <span class="">  @Model.TicketStatus.Name</span></li>
                             </ul>
                         </div>
                     </div>
@@ -51,7 +51,19 @@
                             </div>
                             <div class="card-body" style="overflow-y:auto;height:600px;">
 
-                                @*Form and Logic for authorized users to add comments*@
+                                <div>
+                                    <form asp-action="AddTicketComment" asp-controller="Tickets" enctype="multipart/form-data" method="post">
+                                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                        <input type="hidden" asp-for="@Model.Id" name="TicketId">
+                                        <div class="media-body ml-3">
+                                            <label>
+                                                Add A Comment:
+                                                <textarea id="editor" name="comment" class="form-control"></textarea>
+                                            </label><br />
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
                                 <hr />
                                 <h6>Comments</h6>
                                 <ul class="right_chat list-unstyled mb-0">

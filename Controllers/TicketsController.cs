@@ -311,6 +311,7 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> AddTicketAttachment([Bind("Id,FormFile,Description,TicketId")] TicketAttachment ticketAttachment)
         {
             string statusMessage;
+            ModelState.Remove("BTUserId");
 
             if (ModelState.IsValid && ticketAttachment.FormFile != null)
             {
@@ -318,9 +319,9 @@ namespace BugTracker.Controllers
                 ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
                 ticketAttachment.FileType = ticketAttachment.FormFile.ContentType;
 
-                ticketAttachment.Created = DateTime.UtcNow;
                 ticketAttachment.BTUserId = _userManager.GetUserId(User);
-
+                ticketAttachment.Created = DateTime.UtcNow;
+                
                 await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
                 statusMessage = "Success: New attachment added to Ticket.";
             }
@@ -345,6 +346,29 @@ namespace BugTracker.Controllers
 
             Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
             return File(fileData, $"application/{ext}");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTicketComment([Bind("Id,Comment,TicketId")] TicketComment ticketComment)
+        {
+            string statusMessage;
+            ModelState.Remove("UserId");
+
+            if (ModelState.IsValid)
+            {
+                ticketComment.UserId = _userManager.GetUserId(User);
+                ticketComment.Created = DateTime.UtcNow;
+
+                await _ticketService.AddTicketCommentAsync(ticketComment);
+                statusMessage = "Success: New attachment added to Ticket.";
+            }
+            else
+            {
+                statusMessage = "Error: Invalid data.";
+            }
+
+            return RedirectToAction("Details", new { id = ticketComment.TicketId, message = statusMessage });
         }
     }
 }

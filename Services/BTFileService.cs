@@ -37,9 +37,12 @@ namespace BugTracker.Services
         {
             try
             {
-                using MemoryStream memoryStream = new();
+                MemoryStream memoryStream = new MemoryStream();
                 await file.CopyToAsync(memoryStream);
-                return memoryStream.ToArray();
+                var byteFile = memoryStream.ToArray();
+                memoryStream.Close();
+                memoryStream.Dispose();
+                return byteFile;
             }
             catch
             {

@@ -17,7 +17,8 @@ namespace BugTracker.Services.Interfaces
         Task<List<TicketPriority>> GetTicketPriorities();
         Task RestoreTicketAsync(Ticket ticket, int companyId);
         Task UpdateTicketAsync(Ticket ticket, int companyId);
-        public Task AddTicketAttachmentAsync(TicketAttachment ticketAttachment);
-        public Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int ticketAttachmentId);
+        Task AddTicketAttachmentAsync(TicketAttachment ticketAttachment);
+        Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int ticketAttachmentId);
+        Task AddTicketCommentAsync(TicketComment comment);
     }
 }

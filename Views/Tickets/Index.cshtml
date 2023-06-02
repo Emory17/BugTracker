@@ -85,8 +85,8 @@
                 @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                 @if(item.Archived && !item.ArchivedByProject)
                 {
                     <a asp-action="Restore" asp-route-id="@item.Id">Restore</a>
@@ -95,6 +95,7 @@
                 {
                     <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
                 }
+                <a asp-action="AssignDeveloper" asp-route-id="@item.Id">Assign Dev</a>
             </td>
         </tr>
 }

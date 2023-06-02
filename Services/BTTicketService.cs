@@ -227,8 +227,8 @@ namespace BugTracker.Services
             return await _context.Tickets
                     .Include(t => t.Project)
                         .ThenInclude(p => p!.Members)
+                    .Where(t => t.Project!.CompanyId == companyId && t.DeveloperUserId == null && !t.Archived)
                     .Include(t => t.DeveloperUser)
-                    .Where(t => t.Project!.CompanyId == companyId && t.DeveloperUser == null && !t.Archived)
                     .Include(t => t.TicketPriority)
                     .Include(t => t.TicketStatus)
                     .Include(t => t.TicketType)
@@ -300,6 +300,19 @@ namespace BugTracker.Services
             catch (Exception)
             {
 
+                throw;
+            }
+        }
+
+        public async Task AddTicketCommentAsync(TicketComment comment)
+        {
+            try
+            {
+                await _context.AddAsync(comment);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
                 throw;
             }
         }
