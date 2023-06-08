@@ -26,13 +26,15 @@ namespace BugTracker.Controllers
         private readonly IBTTicketService _ticketService;
         private readonly IBTProjectService _projectService;
         private readonly IBTFileService _fileService;
+        private readonly IBTTicketHistoryService _ticketHistoryService;
 
-        public TicketsController(UserManager<BTUser> userManager, IBTTicketService ticketService, IBTProjectService projectService, IBTFileService fileService)
+        public TicketsController(UserManager<BTUser> userManager, IBTTicketService ticketService, IBTProjectService projectService, IBTFileService fileService, IBTTicketHistoryService ticketHistoryService)
         {
             _userManager = userManager;
             _ticketService = ticketService;
             _projectService = projectService;
             _fileService = fileService;
+            _ticketHistoryService = ticketHistoryService;
         }
 
         // GET: Tickets
@@ -150,6 +152,9 @@ namespace BugTracker.Controllers
                 }
                 
                 await _ticketService.AddTicketAsync(ticket);
+
+                await _ticketHistoryService.AddHistoryAsync(null, ticket, _userManager.GetUserId(User)!);
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -206,7 +211,13 @@ namespace BugTracker.Controllers
                     ticket.Created = DateTime.SpecifyKind(ticket.Created, DateTimeKind.Utc);
                     ticket.Updated = DateTime.UtcNow;
 
+                    Ticket? oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, User.Identity!.GetCompanyId());
+
                     await _ticketService.UpdateTicketAsync(ticket, User.Identity!.GetCompanyId());
+
+                    ticket = (await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, User.Identity!.GetCompanyId()))!;
+
+                    await _ticketHistoryService.AddHistoryAsync(oldTicket, ticket, _userManager.GetUserId(User)!);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -324,6 +335,8 @@ namespace BugTracker.Controllers
                 
                 await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
                 statusMessage = "Success: New attachment added to Ticket.";
+
+                await _ticketHistoryService.AddHistoryAsync(ticketAttachment.TicketId, nameof(ticketAttachment), ticketAttachment.BTUserId!);
             }
             else
             {
@@ -362,6 +375,8 @@ namespace BugTracker.Controllers
 
                 await _ticketService.AddTicketCommentAsync(ticketComment);
                 statusMessage = "Success: New attachment added to Ticket.";
+
+                await _ticketHistoryService.AddHistoryAsync(ticketComment.TicketId, nameof(ticketComment), ticketComment.UserId!);
             }
             else
             {

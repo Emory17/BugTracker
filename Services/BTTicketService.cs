@@ -129,6 +129,7 @@ namespace BugTracker.Services
                 .Include(t => t.SubmitterUser)
                 .Include(t => t.SubmitterUser)
                 .Include(t => t.Attachments)
+                .Include(t => t.History)
                 .Include(t => t.Comments)
                     .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(t => t.Id == ticketId && t.Project!.CompanyId == companyId);
@@ -154,6 +155,7 @@ namespace BugTracker.Services
                 .Include(t => t.SubmitterUser)
                 .Include(t => t.SubmitterUser)
                 .Include(t => t.Attachments)
+                .Include(t => t.History)
                 .Include(t => t.Comments)
                     .ThenInclude(c=> c.User)
                 .FirstOrDefaultAsync(t => t.Id == ticketId && t.Project!.CompanyId == companyId);

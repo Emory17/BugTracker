@@ -108,7 +108,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            List<BTUser> members = await _companyService.GetUsersByCompanyIdAsync(User.Identity!.GetCompanyId());
+            List<BTUser> members = await _companyService.GetCompanyMembersAsync(User.Identity!.GetCompanyId());
             List<BTUser> current = new();
             List<BTUser> unassigned = new();
 
@@ -151,7 +151,7 @@ namespace BugTracker.Controllers
                     return BadRequest();
                 }
 
-                List<BTUser> members = await _companyService.GetUsersByCompanyIdAsync(User.Identity!.GetCompanyId());
+                List<BTUser> members = await _companyService.GetCompanyMembersAsync(User.Identity!.GetCompanyId());
 
                 if (!string.IsNullOrEmpty(viewModel.MemberId))
                 {

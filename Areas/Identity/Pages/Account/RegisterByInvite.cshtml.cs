@@ -14,17 +14,16 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using BugTracker.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using BugTracker.Data;
+using BugTracker.Services.Interfaces;
 using BugTracker.Models.Enums;
 
 namespace BugTracker.Areas.Identity.Pages.Account
 {
-    public class RegisterModel : PageModel
+    public class RegisterByInviteModel : PageModel
     {
         private readonly SignInManager<BTUser> _signInManager;
         private readonly UserManager<BTUser> _userManager;
@@ -32,15 +31,17 @@ namespace BugTracker.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<BTUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly ApplicationDbContext _context;
+        private readonly IBTInviteService _inviteService;
+        private readonly IBTProjectService _projectService;
 
-        public RegisterModel(
+        public RegisterByInviteModel(
             UserManager<BTUser> userManager,
             IUserStore<BTUser> userStore,
             SignInManager<BTUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            ApplicationDbContext context)
+            IBTInviteService inviteService,
+            IBTProjectService projectService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -48,7 +49,8 @@ namespace BugTracker.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _context = context;
+            _inviteService = inviteService;
+            _projectService = projectService;
         }
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace BugTracker.Areas.Identity.Pages.Account
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } = new();
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -115,39 +117,50 @@ namespace BugTracker.Areas.Identity.Pages.Account
             public string? LastName { get; set; }
 
             [Required]
+            public int CompanyId { get; set; }
+
             [Display(Name = "Company Name")]
             public string CompanyName { get; set; }
 
-            [Display(Name = "Company Description")]
-            public string CompanyDescription { get; set; }
+            public string Token { get; set; }
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task OnGetAsync(string token, int id, int companyId, string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            Invite? invite = await _inviteService.GetInviteAsync(id, companyId);
+
+            Input.Email = invite.InviteeEmail;
+            Input.FirstName = invite.InviteeFirstName;
+            Input.LastName = invite.InviteeLastName;
+            Input.CompanyName = invite.Company.Name;
+            Input.CompanyId = invite.CompanyId;
+            Input.Token = token;
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            Invite invite = await _inviteService.GetInviteAsync(Guid.Parse(Input.Token), Input.Email, Input.CompanyId);
+
+            if(invite == null || await _inviteService.ValidateInviteCodeAsync(invite.CompanyToken) == false)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid invite link. Please contact the company owner for a new invite");
+            }
+
             if (ModelState.IsValid)
             {
-                Company company = new()
-                {
-                    Name = Input.CompanyName,
-                    Description = Input.CompanyDescription
-                };
-                await _context.AddAsync(company);
-                await _context.SaveChangesAsync();
-
                 BTUser user = new()
                 {
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    CompanyId = company.Id
+                    Email = invite.InviteeEmail,
+                    CompanyId = invite.CompanyId
                 };
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -156,11 +169,19 @@ namespace BugTracker.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    if(invite.ProjectId is not null or 0)
+                    {
+                        await _projectService.AddMemberToProjectAsync(user, invite.ProjectId.Value, Input.CompanyId);
+                    }
+
+                    await _userManager.AddToRoleAsync(user, nameof(BTRoles.Submitter));
+
                     _logger.LogInformation("User created a new account with password.");
 
-                    await _userManager.AddToRoleAsync(user, nameof(BTRoles.Admin));
-
                     var userId = await _userManager.GetUserIdAsync(user);
+
+                    await _inviteService.AcceptInviteAsync(invite.CompanyToken, userId, invite.CompanyId);
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
