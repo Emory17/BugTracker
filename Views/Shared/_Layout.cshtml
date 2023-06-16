@@ -578,7 +578,7 @@ License: You must have a valid license purchased only from themeforest(the above
             <div class="-intro-x breadcrumb me-auto"> <a href="">Application</a> <i data-feather="chevron-right" class="breadcrumb__icon"></i> <a href="" class="breadcrumb--active">Dashboard</a> </div>
             <!-- END: Breadcrumb -->
             <partial name="_LoginPartial" />
-            <!-- BEGIN: Notifications -->
+            <!-- BEGIN: Notifications
             <div class="intro-x dropdown me-4 me-sm-6">
                 <div class="dropdown-toggle notification notification--bullet cursor-pointer" role="button" aria-expanded="false" data-bs-toggle="dropdown"> <i data-feather="bell" class="notification__icon dark-text-gray-300"></i> </div>
                 <div class="notification-content pt-2 dropdown-menu">
@@ -652,11 +652,11 @@ License: You must have a valid license purchased only from themeforest(the above
                     </div>
                 </div>
             </div>
-            <!-- END: Notifications -->
+             END: Notifications -->
             <!-- BEGIN: Account Menu -->
             <div class="account-menu intro-x dropdown w-8 h-8">
                 <div class="dropdown-toggle w-8 h-8 rounded-pill overflow-hidden shadow-lg image-fit zoom-in" role="button" aria-expanded="false" data-bs-toggle="dropdown">
-                    <img alt="Icewall Bootstrap HTML Admin Template" src="dist/images/profile-13.jpg">
+                    <img alt="Icewall Bootstrap HTML Admin Template" src="~/dist/images/profile-13.jpg">
                 </div>
                 <div class="dropdown-menu w-56">
                     <ul class="dropdown-content bg-theme-11 dark-bg-dark-6">
@@ -697,124 +697,154 @@ License: You must have a valid license purchased only from themeforest(the above
             <!-- BEGIN: Side Menu -->
             <nav class="side-nav">
                 <ul>
-                    <li>
-                        <a asp-controller="Home" asp-action="Index" class="side-menu side-menu__active">
-                            <div class="side-menu__icon"> <i data-feather="home"></i> </div>
-                            <div class="side-menu__title"> Dashboard </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Company" asp-action="Index" class="side-menu">
-                            <div class="side-menu__icon"> <i data-feather="trello"></i> </div>
-                            <div class="side-menu__title"> Company </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="side-menu">
-                            <div class="side-menu__icon"> <i data-feather="layout"></i> </div>
-                            <div class="side-menu__title">
-                                Projects
-                                <div class="side-menu__sub-icon"> <i data-feather="chevron-down"></i> </div>
-                            </div>
-                        </a>
-                        <ul class="">
-                            @* Temp *@
-                            <li>
-                                <a asp-controller="Projects" asp-action="Index" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> Project Index </div>
-                                </a>
-                            </li>
-                            @*
+                    @if (!User.Identity!.IsAuthenticated)
+                    {
+                        <li>
+                            <a asp-controller="Home" asp-action="Index" class="side-menu side-menu__active">
+                                <div class="side-menu__icon"> <i data-feather="home"></i> </div>
+                                <div class="side-menu__title"> Home </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="Identity" asp-page="/Account/Login">
+                                <div class="side-menu__icon"> <i data-feather="log-in"></i> </div>
+                                <div class="side-menu__title"> Sign In </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="Identity" asp-page="/Account/Register">
+                                <div class="side-menu__icon"> <i data-feather="trello"></i> </div>
+                                <div class="side-menu__title"> Register Company </div>
+                            </a>
+                        </li> 
+                    }
+                    else
+                    {
+                        <li>
+                            <a asp-controller="Home" asp-action="Dashboard" class="side-menu side-menu__active">
+                                <div class="side-menu__icon"> <i data-feather="home"></i> </div>
+                                <div class="side-menu__title"> Dashboard </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Company" asp-action="Index" class="side-menu">
+                                <div class="side-menu__icon"> <i data-feather="trello"></i> </div>
+                                <div class="side-menu__title"> Company </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Company" asp-action="ManageUserRoles" class="side-menu">
+                                <div class="side-menu__icon"> <i data-feather="trello"></i> </div>
+                                <div class="side-menu__title"> Manage User Roles </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;" class="side-menu">
+                                <div class="side-menu__icon"> <i data-feather="layout"></i> </div>
+                                <div class="side-menu__title">
+                                    Projects
+                                    <div class="side-menu__sub-icon"> <i data-feather="chevron-down"></i> </div>
+                                </div>
+                            </a>
+                            <ul class="">
+                                @* Temp *@
+                                <li>
+                                    <a asp-controller="Projects" asp-action="Index" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> Project Index </div>
+                                    </a>
+                                </li>
+                                @*
                             This link should be shown for everyone except admins
                             All projects this user is currently a member of
                             *@
-                            <li>
-                                <a asp-controller="Projects" asp-action="MyProjects" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> My Projects </div>
-                                </a>
-                            </li>
-                            @* All (unarchived) projects in this company *@
-                            <li>
-                                <a asp-controller="Projects" asp-action="AllProjects" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> All Projects </div>
-                                </a>
-                            </li>
-                            @* Archived projects in this company *@
-                            <li>
-                                <a asp-controller="Projects" asp-action="ArchivedProjects" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> Archived Projects </div>
-                                </a>
-                            </li>
-                            @* Projects with no PM *@
-                            <li>
-                                <a asp-controller="Projects" asp-action="UnassignedProjects" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> Unassigned Projects </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="side-menu">
-                            <div class="side-menu__icon"> <i data-feather="file-text"></i> </div>
-                            <div class="side-menu__title">
-                                Tickets
-                                <div class="side-menu__sub-icon"> <i data-feather="chevron-down"></i> </div>
-                            </div>
-                        </a>
-                        <ul class="">
-                            @* Temp *@
-                            <li>
-                                <a asp-controller="Tickets" asp-action="Index" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> Ticket Index </div>
-                                </a>
-                            </li>
-                            @*
+                                <li>
+                                    <a asp-controller="Projects" asp-action="MyProjects" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> My Projects </div>
+                                    </a>
+                                </li>
+                                @* All (unarchived) projects in this company *@
+                                <li>
+                                    <a asp-controller="Projects" asp-action="AllProjects" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> All Projects </div>
+                                    </a>
+                                </li>
+                                @* Archived projects in this company *@
+                                <li>
+                                    <a asp-controller="Projects" asp-action="ArchivedProjects" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> Archived Projects </div>
+                                    </a>
+                                </li>
+                                @* Projects with no PM *@
+                                <li>
+                                    <a asp-controller="Projects" asp-action="UnassignedProjects" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> Unassigned Projects </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="javascript:;" class="side-menu">
+                                <div class="side-menu__icon"> <i data-feather="file-text"></i> </div>
+                                <div class="side-menu__title">
+                                    Tickets
+                                    <div class="side-menu__sub-icon"> <i data-feather="chevron-down"></i> </div>
+                                </div>
+                            </a>
+                            <ul class="">
+                                @* Temp *@
+                                <li>
+                                    <a asp-controller="Tickets" asp-action="Index" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> Ticket Index </div>
+                                    </a>
+                                </li>
+                                @*
                             Admins -> this link does not appear
                             PMs -> all tickets for their projects
                             Developers -> all tickets where they are the DeveloperUser or SubmitterUser
                             Submitters -> all tickets where they are the SubmitterUser
                             *@
-                            <li>
-                                <a asp-controller="Tickets" asp-action="MyTickets" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> My Tickets </div>
-                                </a>
-                            </li>
-                            @* All (unarchived) tickets in this company *@
-                            <li>
-                                <a asp-controller="Tickets" asp-action="AllTickets" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> All Tickets </div>
-                                </a>
-                            </li>
-                            @* Archived tickets in this company *@
-                            <li>
-                                <a asp-controller="Tickets" asp-action="ArchivedTickets" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> Archived Tickets </div>
-                                </a>
-                            </li>
-                            @* Tickets with no developer assigned *@
-                            <li>
-                                <a asp-controller="Tickets" asp-action="UnassignedTickets" class="side-menu">
-                                    <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                    <div class="side-menu__title"> Unassigned Tickets </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a asp-controller="Notifications" asp-action="Index" class="side-menu">
-                            <div class="side-menu__icon"> <i data-feather="inbox"></i> </div>
-                            <div class="side-menu__title"> Notifications </div>
-                        </a>
-                    </li>
+                                <li>
+                                    <a asp-controller="Tickets" asp-action="MyTickets" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> My Tickets </div>
+                                    </a>
+                                </li>
+                                @* All (unarchived) tickets in this company *@
+                                <li>
+                                    <a asp-controller="Tickets" asp-action="AllTickets" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> All Tickets </div>
+                                    </a>
+                                </li>
+                                @* Archived tickets in this company *@
+                                <li>
+                                    <a asp-controller="Tickets" asp-action="ArchivedTickets" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> Archived Tickets </div>
+                                    </a>
+                                </li>
+                                @* Tickets with no developer assigned *@
+                                <li>
+                                    <a asp-controller="Tickets" asp-action="UnassignedTickets" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                        <div class="side-menu__title"> Unassigned Tickets </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a asp-controller="Notifications" asp-action="Index" class="side-menu">
+                                <div class="side-menu__icon"> <i data-feather="inbox"></i> </div>
+                                <div class="side-menu__title"> Notifications </div>
+                            </a>
+                        </li>
+                    }
                 </ul>
             </nav>
             <!-- END: Side Menu -->
