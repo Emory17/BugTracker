@@ -276,7 +276,7 @@ namespace BugTracker.Controllers
                 await _ticketService.ArchiveTicketAsync(ticket, User.Identity!.GetCompanyId());
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         public async Task<IActionResult> Restore(int? id)
@@ -306,7 +306,7 @@ namespace BugTracker.Controllers
                 await _ticketService.RestoreTicketAsync(ticket, User.Identity!.GetCompanyId());
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         [HttpPost]

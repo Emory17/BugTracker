@@ -74,7 +74,7 @@
         }
         @if (User.IsInRole(nameof(BTRoles.Admin)) || (User.IsInRole(nameof(BTRoles.ProjectManager)) && pm is not null && pm.Id == _userManager.GetUserId(User)))
         {
-            <span class="ms-5"><a asp-controller="Projects" asp-action="EditMembers" asp-route-id="@Model.Id" class="btn btn-rounded-primary mt-3">Edit Members</a></span>
+            <span class="ms-5"><a href="javascript:;" data-bs-toggle="modal" data-bs-target="#editmem-modal" class="btn btn-rounded-primary mt-3">Edit Members</a></span>
         }
     </div>
     <div class="row row-cols-4 g-3 mt-3">
@@ -216,6 +216,7 @@
         </div>
     </div>
 </div> <!-- END: Modal Content -->
+
 <!-- BEGIN: Modal Content -->
 <div id="editmem-modal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -260,7 +261,7 @@
                                 <div class="card-body">
                                     <form asp-action="EditMembers" method="post" class="d-flex flex-column">
                                         <input type="hidden" name="projectId" value="@Model.Id" />
-                                        <select class="form-select" asp-items="unassignedList" name="memberId">
+                                        <select class="form-control tom-select" asp-items="unassignedList" name="memberId">
                                             <option value="">Potential Members</option>
                                         </select>
                                         <button type="submit" class="btn btn-primary my-3">Add</button>
@@ -276,7 +277,7 @@
                                 <div class="card-body">
                                     <form asp-action="EditMembers" method="post" class="d-flex flex-column">
                                         <input type="hidden" name="projectId" value="@Model.Id" />
-                                        <select class="form-select" asp-items="currentList" name="memberId">
+                                        <select class="form-control tom-select" asp-items="currentList" name="memberId">
                                             <option value="">Current Members</option>
                                         </select>
                                         <button type="submit" class="btn btn-primary my-3">Remove</button>
