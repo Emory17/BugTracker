@@ -15,7 +15,7 @@
 
 <div class="container intro-y">
 	<div class="fs-xl fw-bold mt-8">User</div>
-	<div class="box p-5 d-flex align-items-center w-50">
+	<div class="box p-5 d-flex align-items-center w-50 mt-3">
 		<div class="me-auto fw-medium">@btUser!.FullName</div>
 		@if(await _roleService.IsUserInRole(btUser, nameof(BTRoles.Admin)))
 		{
@@ -81,7 +81,7 @@
 	<div class="row row-cols-2 g-5">
 		<div class="col">
 			<div class="fs-xl fw-bold mt-8">Projects</div>
-            <table class="table table-report mt-3">
+            <table class="table table-report">
                 <thead>
                     <tr>
                         <th class="border-bottom-0 text-nowrap">Project Name</th>
