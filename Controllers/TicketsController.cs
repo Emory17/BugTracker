@@ -167,7 +167,7 @@ namespace BugTracker.Controllers
 
                 await _ticketHistoryService.AddHistoryAsync(null, ticket, _userManager.GetUserId(User)!);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = ticket.Id });
             }
 
             var projects = await _projectService.GetProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
@@ -235,7 +235,7 @@ namespace BugTracker.Controllers
                 {
                     throw;
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id });
             }
 
             var priorities = await _ticketService.GetTicketPriorities();

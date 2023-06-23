@@ -352,6 +352,18 @@ namespace BugTracker.Services
 
                 if (project is not null)
                 {
+                    if (await _rolesService.IsUserInRole(member, nameof(BTRoles.Developer)))
+                    {
+                        List<Ticket> tickets = await _context.Tickets.Where(t => t.DeveloperUserId == member.Id).ToListAsync();
+
+                        foreach (Ticket ticket in tickets)
+                        {
+                            ticket.DeveloperUserId = null;
+                        }
+
+                        await _context.SaveChangesAsync();
+                    }
+
                     project.Members.Remove(member);
                     _context.Update(project);
                     await _context.SaveChangesAsync();

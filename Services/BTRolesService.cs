@@ -97,7 +97,7 @@ namespace BugTracker.Services
             {
                 if (roleName.Equals(nameof(BTRoles.Developer)))
                 {
-                    List<Ticket> tickets = await _context.Tickets.Where(t => !t.Archived && (t.DeveloperUserId == user.Id)).ToListAsync();
+                    List<Ticket> tickets = await _context.Tickets.Where(t => t.DeveloperUserId == user.Id).ToListAsync();
 
                     foreach (Ticket ticket in tickets)
                     {
@@ -122,7 +122,7 @@ namespace BugTracker.Services
             {
                 if(roleNames.Contains(nameof(BTRoles.Developer)))
                 {
-                    List<Ticket> tickets = await _context.Tickets.Where(t => !t.Archived && (t.DeveloperUserId == user.Id)).ToListAsync();
+                    List<Ticket> tickets = await _context.Tickets.Where(t => t.DeveloperUserId == user.Id).ToListAsync();
 
                     foreach (Ticket ticket in tickets) 
                     {
