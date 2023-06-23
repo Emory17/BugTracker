@@ -4,15 +4,13 @@
     ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"]</h1>
-
 <div class="row">
     <div class="col-md-4">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
+            <div class="fs-lg fw-medium mt-3">Register a new company</div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
+            <div class="form-floating my-3">
                 <label asp-for="Input.Email">Email</label>
                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <span asp-validation-for="Input.Email" class="text-danger"></span>

@@ -6,9 +6,9 @@ namespace BugTracker.Services
     public class BTFileService : IBTFileService
     {
         private readonly string _defaultImage = "";
-        private readonly string _defaultBTUserImageSrc = "";
+        private readonly string _defaultBTUserImageSrc = "/img/DefaultProfileImage";
         private readonly string _defaultCompanyImageSrc = "";
-        private readonly string _defaultProjectImageSrc = "";
+        private readonly string _defaultProjectImageSrc = "/img/DefaultProjectImage.png";
 
         private readonly string[] suffixes = { "Bytes", "KB", "MB", "GB", "TB", "PB" };
 

@@ -23,6 +23,9 @@ namespace BugTracker.Services
                                 .Include(c => c.Projects)
                                     .ThenInclude(p => p.Tickets)
                                 .Include(c => c.Invites)
+                                    .ThenInclude(i => i.Project)
+                                .Include(c => c.Invites)
+                                    .ThenInclude(i => i.Invitor)
                                 .FirstOrDefaultAsync(c => c.Id == companyId);
             }
             catch (Exception)

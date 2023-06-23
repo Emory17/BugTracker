@@ -1,42 +1,193 @@
-﻿@model BugTracker.Models.Company
+﻿@using BugTracker.Extensions;
+@using BugTracker.Models.Enums;
+@using BugTracker.Services.Interfaces;
+@using Microsoft.AspNetCore.Identity;
+@model BugTracker.Models.Company;
+
+@inject IBTProjectService _projectService;
+@inject IBTRolesService _roleService;
+@inject IBTCompanyService _companyService;
+@inject UserManager<BTUser> _userManager;
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="container intro-y">
+    <div class="box py-5 px-10 d-flex flex-column mt-8">
+        <div class="fs-lg fw-medium">@Model.Name</div>
+        <div class="text-lead mt-5">@Model.Description</div>
+    </div>
 
-<div>
-    <h4>Company</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileData)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileData)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileType)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="d-flex mt-8">
+        <div class="fs-lg fw-medium">Company Members</div>
+        @if(User.IsInRole(nameof(BTRoles.Admin)))
+        {
+            <div class="ms-auto">
+                <span><a asp-controller="Invites" asp-action="Create" class="btn btn-rounded-dark me-1">Invite New Members</a></span>
+                <span><a asp-controller="Company" asp-action="ManageUserRoles" class="btn btn-rounded-primary">Manage Roles</a></span>
+            </div>
+        }
+    </div>
+
+    @{
+        List<BTUser> members = await _companyService.GetCompanyMembersAsync(User.Identity!.GetCompanyId());
+        List<BTUser> admins = new();
+        List<BTUser> pms = new();
+        List<BTUser> devs = new();
+        List<BTUser> subs = new();
+
+        foreach (BTUser member in members)
+        {
+            if(await _roleService.IsUserInRole(member, nameof(BTRoles.Admin)))
+            {
+                admins.Add(member);
+            }
+            else if (await _roleService.IsUserInRole(member, nameof(BTRoles.ProjectManager)))
+            {
+                pms.Add(member);
+            }
+            else if(await _roleService.IsUserInRole(member, nameof(BTRoles.Developer)))
+            {
+                devs.Add(member);
+            }
+            else if (await _roleService.IsUserInRole(member, nameof(BTRoles.Submitter)))
+            {
+                subs.Add(member);
+            }
+        }
+    }
+
+    <div class="row row-cols-4 g-5 mt-5">
+        <div class="col">
+            <div class="text-lead">Administrators</div>
+            @foreach(BTUser member in admins)
+            {
+                <div class="box p-5 mt-3">
+                    <div class="fw-medium">@member.FullName</div>
+                </div>
+            }
+        </div>
+        <div class="col">
+            <div class="text-lead">Project Managers</div>
+            @foreach (BTUser member in pms)
+            {
+                <div class="box p-5 mt-3">
+                    <div class="fw-medium">@member.FullName</div>
+                </div>
+            }
+        </div>
+        <div class="col">
+            <div class="text-lead">Developers</div>
+            @foreach(BTUser member in devs)
+            {
+                <div class="box p-5 mt-3">
+                    <div class="fw-medium">@member.FullName</div>
+                </div>
+            }
+        </div>
+        <div class="col">
+            <div class="text-lead">Submitters</div>
+            @foreach (BTUser member in subs)
+            {
+                <div class="box p-5 mt-3">
+                    <div class="fw-medium">@member.FullName</div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (User.IsInRole(nameof(BTRoles.Admin)) && Model.Invites.Count > 0 && Model.Invites.Any(i => i.IsValid))
+    {
+    
+        <div class="fs-lg fw-medium mt-8">Pending Invites</div>
+        <div class="grid columns-12 gap-6 mt-3">
+            <table class="table table-report">
+                <thead>
+                    <tr>
+                        <th class="border-bottom-0 text-nowrap">Name</th>
+                        <th class="border-bottom-0 text-nowrap">Email</th>
+                        <th class="border-bottom-0 text-nowrap">Project</th>
+                        <th class="border-bottom-0 text-nowrap">Invite Date</th>
+                        <th class="border-bottom-0 text-nowrap">Invited By</th>
+                        <th class="border-bottom-0 text-nowrap"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Invite invite in Model.Invites)
+                    {
+                        if (invite.IsValid)
+                        {
+                            <tr class="text-nowrap">
+                                <td>@invite.Invitee!.FullName</td>
+                                <td>@invite.InviteeEmail</td>
+                                <td>@invite.Project!.Name</td>
+                                <td>@invite.InviteDate.ToString("MM-dd-yyyy")</td>
+                                <td>@invite.Invitor!.FullName</td>
+                                <td>
+                                    <a asp-controller="Invites" asp-action="CancelInvite" asp-route-id="@invite.Id" class="btn btn-rounded-danger me-1 mb-2">Cancel</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @{
+        List<Project> projects = await _projectService.GetProjectsByCompanyIdAsync(Model.Id);
+    }
+
+    <div class="fs-lg fw-medium mt-8">Projects</div>
+    <div class="grid columns-12 gap-6 mt-3">
+        <table class="table table-report">
+            <thead>
+                <tr>
+                    <th class="border-bottom-0 text-nowrap">Project Name</th>
+                    <th class="border-bottom-0 text-nowrap">Project Manager</th>
+                    <th class="border-bottom-0 text-nowrap">Developers</th>
+                    <th class="border-bottom-0 text-nowrap">Submitters</th>
+                    <th class="border-bottom-0 text-nowrap">Tickets</th>
+                    <th class="border-bottom-0 text-nowrap"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Project project in projects)
+                {
+                    <tr class="text-nowrap">
+                        <td>@project.Name</td>
+                        @{
+                            BTUser? pm = await _projectService.GetProjectManagerAsync(project.Id, project.CompanyId);
+                        }
+                        @if (@pm is null)
+                        {
+                            <td class="text-danger">Unassigned</td>
+                        }
+                        else
+                        {
+                            <td>@pm.FullName</td>
+                        }
+                        <td>@((await _projectService.GetProjectMembersByRoleAsync(project.Id, nameof(BTRoles.Developer), project.CompanyId)).Count)</td>
+                        <td>@((await _projectService.GetProjectMembersByRoleAsync(project.Id, nameof(BTRoles.Submitter), project.CompanyId)).Count)</td>
+                        <td>@project.Tickets.Count</td>
+                        <td>
+                            <a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id" class="btn btn-rounded-success me-1">Details</a>
+                            @if (User.IsInRole(nameof(BTRoles.Admin)) || (User.IsInRole(nameof(BTRoles.ProjectManager)) && pm is not null && pm.Id == _userManager.GetUserId(User)))
+                            {
+                                if (project.Archived)
+                                {
+                                    <a asp-controller="Projects" asp-action="Restore" asp-route-id="@project.Id" class="btn btn-rounded-dark">Restore</a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Projects" asp-action="Archive" asp-route-id="@project.Id" class="btn btn-rounded-danger">Archive</a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

@@ -130,5 +130,17 @@ namespace BugTracker.Controllers
                 throw;
             }
         }
+
+        public async Task<IActionResult> CancelInvite(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            await _inviteService.CancelInviteAsync(id.Value, User.Identity!.GetCompanyId());
+
+            return RedirectToAction("Index", "Company");
+        }
     }
 }

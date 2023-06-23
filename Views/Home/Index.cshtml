@@ -3,10 +3,19 @@
 }
 
 <div class="m-5">
-    <h1 class="heroTitle">All your projects and tickets in one place!</h1>
-    <br/>
-    <div class="subtitle">
-        Organize your projects by manging tickets and developers
-        Experience the power of IssueTracker - demo today!
+    <div class="row row-cols-2 g-5">
+        <div class="col">
+            <img src="~/img/DefaultProjectImage.png" class="img-fluid">
+        </div>
+        <div class="col">
+            <div class="text-center fs-1 fw-bold">Welcome to Issue Tracker</div>
+            <div class="mt-3 fs-4">
+                Using Issue Tracker, you can easily organize your projects and create tickets to manage your tasks.
+                By inviting members of your company, assigning project managers to projects, and tasking developers with tickets,
+                you can be sure that Issue Tracker will make organizing and prioritizing easy.
+                <br/><br/>
+                If you are interested, please <a asp-area="Identity" asp-page="/Account/Login" class="fw-bold">sign in</a> or <a asp-area="Identity" asp-page="/Account/Register" class="fw-bold">register your company</a> to get started.
+            </div>
+        </div>
     </div>
 </div>

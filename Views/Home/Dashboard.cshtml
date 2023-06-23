@@ -1,111 +1,137 @@
-﻿@{
+﻿@using BugTracker.Models.Enums;
+@using BugTracker.Models.ViewModel;
+@using BugTracker.Services.Interfaces;
+@using Microsoft.AspNetCore.Identity;
+@model DashboardViewModel
+
+@inject UserManager<BTUser> _userManager;
+@inject IBTProjectService _projectService;
+@inject IBTRolesService _roleService;
+
+@{
 	ViewData["Title"] = "Dashboard";
-	@* Instantiate the btUser *@
+	BTUser? btUser = User.Identity!.IsAuthenticated ? await _userManager.GetUserAsync(User) : new();
 }
 
-<h1>Dashboard</h1>
-<a href="javascript:void(0);">
-	@* User Info *@
-	[Code: Copy from Ticket/Details]
-</a>
-@* Get The btUser FullName *@
-<strong>[User's FullName]</strong>
-<span class="text-muted" style="font-size:x-small;">
-	@* Company Name *@
-	<strong>[Show CompanyName]</strong>
-</span>
-
-
-<div>
-	<div classxfont-weighteighteightgetainer-fluid">
-		<div class="row gy-2">
-			<div class="col-md-12 col">
-				<div class="row col-cols-4 mt-5 bg-secondary">
-					<div class="card col m-1 p-2">
-						<div class="card-body">
-							<h5>Chart 1</h5>
-							<p>[Projects]</p>
-						</div>
-					</div>
-					<div class="card col m-1 p-2">
-						<div class="card-body">
-							<h5>Chart 2</h5>
-							<p>[Projects]</p>
-						</div>
-					</div>
-					<div class="card col m-1 p-2">
-						<div class="card-body">
-							<h5>Chart 3</h5>
-							<p>[Tickets]</p>
-						</div>
-					</div>
-					<div class="card col m-1 p-2">
-						<div class="card-body">
-							<h5>Chart 4</h5>
-							<p>[Tickets]</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row gy-2">
-			<div class="cols mt-5 bg-secondary">
-				<div class="card col m-1 p-2">
-					<div class="card-body" style="height:380px">
-						<h5>Chart 5</h5>
-						<p>[Projects: Tickets vs Developers]</p>
-					</div>
-				</div>
-			</div>
-		</div>
+<div class="container intro-y">
+	<div class="fs-xl fw-bold mt-8">User</div>
+	<div class="box p-5 d-flex align-items-center w-50">
+		<div class="me-auto fw-medium">@btUser!.FullName</div>
+		@if(await _roleService.IsUserInRole(btUser, nameof(BTRoles.Admin)))
+		{
+			<div class="px-1 py-2 rounded-pill text-white bg-danger">Admin</div>
+		}
+		else if (await _roleService.IsUserInRole(btUser, nameof(BTRoles.ProjectManager)))
+		{
+			<div class="px-1 py-2 rounded-pill text-white bg-dark">Project Manager</div>
+		}
+		else if (await _roleService.IsUserInRole(btUser, nameof(BTRoles.Developer)))
+		{
+			<div class="px-1 py-2 rounded-pill text-white bg-info">Developer</div>
+		}
+		else if (await _roleService.IsUserInRole(btUser, nameof(BTRoles.Submitter)))
+		{
+			<div class="px-1 py-2 rounded-pill text-white bg-success">Submitter</div>
+		}
 	</div>
-	<hr />
-	<div class="mt-5 ">
-		<div class="row">
-			@* Projects Table *@
-			<div class="col">
-				<div class="bg-secondary">
-					<div class="card m-1 p-2">
-						<div class="card-header">
-							<h2>Projects</h2>
-						</div>
-						<div class="card-body">
-							@* [Copy and format table from Unassigned Tickets] *@
-						</div>
-						<div class="card-footer">
-						</div>
-					</div>
-				</div>
-			</div>
-			@* Tickets Table *@
-			<div class="col">
-				<div class="bg-secondary">
-					<div class="card m-1 p-2">
-						<div class="card-header">
-							<h2>Tickets</h2>
-						</div>
-						<div class="card-body">
 
-							@* Copy and format table from Unassigned Tickets *@
-						</div>
-						<div class="card-footer">
-						</div>
+	<div class="fs-xl fw-bold mt-8">Company Members</div>
+    <div class="row row-cols-4 g-3 mt-3">
+        @foreach (BTUser member in Model.Members!)
+        {
+			if (await _roleService.IsUserInRole(member, nameof(BTRoles.Admin)))
+			{
+				<div class="col">
+					<div class="box p-4 d-flex align-items-center">
+						<div class="me-auto fw-medium">@member.FullName</div>
+						<div class="px-1 py-2 rounded-pill fs-xs text-white bg-danger">Admin</div>
 					</div>
 				</div>
-			</div>
-			<div class="col-md-2 ">
-				<div class="bg-dark">
-					<div class="card m-1 p-2">
-						<div class="card-header">
-							<h2>Members</h2>
-							<hr />
-						</div>
-						<div class="card-body" style="overflow-y:auto;height:600px;background-color:antiquewhite">
-							@* Looop over Company members. Display Name and Role *@
-						</div>
+			}
+			else if (await _roleService.IsUserInRole(member, nameof(BTRoles.ProjectManager)))
+			{
+				<div class="col">
+					<div class="box p-4 d-flex align-items-center">
+						<div class="me-auto fw-medium">@member.FullName</div>
+						<div class="px-1 py-2 rounded-pill fs-xs text-white bg-dark">Project Manager</div>
 					</div>
 				</div>
-			</div>
+			}
+            else if (await _roleService.IsUserInRole(member, nameof(BTRoles.Submitter)))
+            {
+                <div class="col">
+                    <div class="box p-4 d-flex align-items-center">
+                        <div class="me-auto fw-medium">@member.FullName</div>
+                        <div class="px-1 py-2 rounded-pill fs-xs text-white bg-success">Submitter</div>
+                    </div>
+                </div>
+            }
+            else if (await _roleService.IsUserInRole(member, nameof(BTRoles.Developer)))
+            {
+                <div class="col">
+                    <div class="col box p-4 d-flex align-items-center">
+                        <div class="me-auto fw-medium">@member.FullName</div>
+                        <div class="px-1 py-2 rounded-pill fs-xs text-white bg-info">Developer</div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+	<div class="row row-cols-2 g-5">
+		<div class="col">
+			<div class="fs-xl fw-bold mt-8">Projects</div>
+            <table class="table table-report mt-3">
+                <thead>
+                    <tr>
+                        <th class="border-bottom-0 text-nowrap">Project Name</th>
+                        <th class="border-bottom-0 text-nowrap">Project Manager</th>
+                        <th class="border-bottom-0 text-nowrap">Tickets</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Project project in Model.Projects!)
+                    {
+                        <tr class="text-nowrap">
+                            <td>@project.Name</td>
+                            @{
+                                BTUser? pm = await _projectService.GetProjectManagerAsync(project.Id, project.CompanyId);
+                            }
+                            @if (@pm is null)
+                            {
+                                <td class="text-danger">Unassigned</td>
+                            }
+                            else
+                            {
+                                <td>@pm.FullName</td>
+                            }
+                            <td>@project.Tickets.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+		</div>
+		<div class="col">
+			<div class="fs-xl fw-bold mt-8">Tickets</div>
+            <table class="table table-report">
+                <thead>
+                    <tr>
+                        <th class="border-bottom-0 text-nowrap">Title</th>
+                        <th class="border-bottom-0 text-nowrap">Type</th>
+                        <th class="border-bottom-0 text-nowrap">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Ticket ticket in Model.Tickets!)
+                    {
+                        <tr class="text-nowrap">
+                            <td>@ticket.Title</td>
+                            <td>@ticket.TicketType!.Name</td>
+                            <td>@ticket.TicketStatus!.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 		</div>
 	</div>
 </div>

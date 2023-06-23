@@ -4,55 +4,54 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Project</h4>
+<div class="fs-lg fw-medium mt-8">Create Project</div>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" asp-controller="Projects" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+<form asp-action="Create" asp-controller="Projects" method="post" enctype="multipart/form-data">
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row mt-3">
+    <div class="col-4">
+            <div class="form-group mt-3">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <label asp-for="StartDate" class="control-label"></label>
                 <input asp-for="StartDate" class="form-control" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <label asp-for="EndDate" class="control-label"></label>
                 <input asp-for="EndDate" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <label asp-for="ProjectPriorityId" class="control-label"></label>
                 <select asp-for="ProjectPriorityId" class="form-control" asp-items="ViewBag.ProjectPriorityId"></select>
             </div>
-            <div class="form-group">
-                <img src="~/img/DefaultProjectImage" class="img-fluid" id="projectImage">
+            <div class="form-group d-flex mt-3">
+                <input type="submit" value="Create" class="btn btn-primary me-1" />
+                <a asp-controller="Home" asp-action="Dashboard" class="btn btn-danger">Cancel</a>
+            </div>
+    </div>
+    <div class="col-8">
+            <div class="form-group mt-3">
+                <img src="~/img/DefaultProjectImage.png" class="img-fluid" id="projectImage">
                 <label asp-for="ImageFormFile" class="control-label"></label>
                 <input asp-for="ImageFormFile" class="form-control" accept=".png,.jpg,.jpeg,.gif,.svg"
                        onchange="document.getElementById('projectImage').src = window.URL.createObjectURL(this.files[0])" />
                 <span asp-validation-for="ImageFormFile" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+        </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -1,103 +1,81 @@
-﻿@model IEnumerable<BugTracker.Models.Ticket>
+﻿@using BugTracker.Models.Enums;
+@using BugTracker.Services.Interfaces;
+@using Microsoft.AspNetCore.Identity;
+@model IEnumerable<BugTracker.Models.Ticket>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+@inject IBTProjectService _projectService;
+@inject UserManager<BTUser> _userManager;
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Updated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Archived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ArchivedByProject)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Project)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketPriority)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeveloperUser)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Updated)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Archived)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ArchivedByProject)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Project.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TicketPriority.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TicketType.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TicketStatus.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                @if(item.Archived && !item.ArchivedByProject)
+<div class="container intro-y">
+    <div class="d-flex mt-8 align-items-center">
+        <span class="fs-lg fw-medium mt-3">@ViewBag.Heading</span>
+        <span class="ms-5"><a asp-controller="Tickets" asp-action="Create" class="btn btn-rounded-primary mt-3">New Ticket</a></span>
+    </div>
+    <div class="grid columns-12 gap-6 mt-3">
+        <table class="table table-report">
+            <thead>
+                <tr>
+                    <th class="border-bottom-0 text-nowrap">Project</th>
+                    <th class="border-bottom-0 text-nowrap">Title</th>
+                    <th class="border-bottom-0 text-nowrap">Status</th>
+                    <th class="border-bottom-0 text-nowrap">Submitter</th>
+                    <th class="border-bottom-0 text-nowrap">Developer</th>
+                    <th class="border-bottom-0 text-nowrap"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(Ticket ticket in Model)
                 {
-                    <a asp-action="Restore" asp-route-id="@item.Id">Restore</a>
+                    <tr class="text-nowrap">
+                        <td>@ticket.Project!.Name</td>
+                        <td>@ticket.Title</td>
+                        <td>@ticket.TicketStatus!.Name</td>
+                        @{
+                            BTUser? sub = ticket.SubmitterUser;
+                        }
+                        @if (sub is null)
+                        {
+                            <td>None</td>
+                        }
+                        else
+                        {
+                            <td>@sub.FullName</td>
+                        }
+                        @{
+                            BTUser? dev = ticket.DeveloperUser;
+                        }
+                        @if (dev is null)
+                        {
+                            <td class="text-danger">Unassigned</td>
+                        }
+                        else
+                        {
+                            <td>@dev.FullName</td>
+                        }
+                        <td>
+                            @{
+                                BTUser? pm = await _projectService.GetProjectManagerAsync(ticket.Project.Id, ticket.Project.CompanyId);
+                            }
+                            <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-rounded-success me-1 mb-2">Details</a>
+                            @if (User.IsInRole(nameof(BTRoles.Admin)) || (User.IsInRole(nameof(BTRoles.ProjectManager)) && pm is not null && pm.Id == _userManager.GetUserId(User)))
+                            {
+                                if(ticket.Archived)
+                                {
+                                    <a asp-controller="Tickets" asp-action="Restore" asp-route-id="@ticket.Id" class="btn btn-rounded-dark me-1 mb-2">Restore</a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Tickets" asp-action="Archive" asp-route-id="@ticket.Id" class="btn btn-rounded-danger me-1 mb-2">Archive</a>
+                                }
+                            }
+                        </td>
+                    </tr>
                 }
-                else if(!item.Archived)
-                {
-                    <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
-                }
-                <a asp-action="AssignDeveloper" asp-route-id="@item.Id">Assign Dev</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            </tbody>
+        </table>
+    </div>
+</div>

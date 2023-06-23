@@ -14,6 +14,7 @@ using BugTracker.Services.Interfaces;
 using System.ComponentModel.Design;
 using BugTracker.Extensions;
 using BugTracker.Models.ViewModel;
+using System.Collections;
 
 namespace BugTracker.Controllers
 {
@@ -36,115 +37,66 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? title)
         {
-            return View(await _projectService.GetProjectsByCompanyIdAsync(User.Identity!.GetCompanyId()));
-        }
-
-        // GET: AssignPM
-        [Authorize(Roles = nameof(BTRoles.Admin))]
-        public async Task<IActionResult> AssignPM(int? id)
-        {
-            if (id is null or 0)
+            if (string.IsNullOrEmpty(title))
             {
                 return NotFound();
             }
 
-            Project? project = await _projectService.GetProjectByIdAsync(id.Value, User.Identity!.GetCompanyId());
+            List<Project> projects = new();
 
-            if(project == null)
+            if(title == "My Projects")
             {
-                return NotFound();
+                projects = await _projectService.GetUserProjectsAsync(_userManager.GetUserId(User)!);
+            }
+            else if(title == "All Projects")
+            {
+                projects = await _projectService.GetProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
+            }
+            else if (title == "Archived Projects")
+            {
+                projects = await _projectService.GetArchivedProjectsAsync(User.Identity!.GetCompanyId());
+            }
+            else if(title == "Unassigned Projects")
+            {
+                projects = await _projectService.GetUnassignedProjectsAsync(User.Identity!.GetCompanyId());
             }
 
-            List<BTUser> projectManagers = await _rolesService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), User.Identity!.GetCompanyId());
-            BTUser? currentPM = await _projectService.GetProjectManagerAsync(id.Value, User.Identity!.GetCompanyId());
-
-            AssignPMViewModel viewModel = new AssignPMViewModel()
-            {
-                Project = project,
-                PMId = currentPM?.Id,
-                PMList = new SelectList(projectManagers, "Id", "FullName", currentPM?.Id)
-            };
-
-            return View(viewModel);
+            ViewData["Heading"] = title;
+            return View(projects);
         }
 
         [HttpPost]
         [Authorize(Roles = nameof(BTRoles.Admin))]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignPM(AssignPMViewModel viewModel)
+        public async Task<IActionResult> AssignPM(int? projectId, string? PMId)
         {
-            if (viewModel.Project?.Id != null)
+            if (projectId != null)
             {
-                if(string.IsNullOrEmpty(viewModel.PMId))
+                if(string.IsNullOrEmpty(PMId))
                 {
-                    await _projectService.RemoveProjectManagerAsync(viewModel.Project.Id, User.Identity!.GetCompanyId());
+                    await _projectService.RemoveProjectManagerAsync(projectId.Value, User.Identity!.GetCompanyId());
                 }
                 else
                 {
-                    await _projectService.AddProjectManagerAsync(viewModel.PMId, viewModel.Project.Id, User.Identity!.GetCompanyId());
+                    await _projectService.AddProjectManagerAsync(PMId, projectId.Value, User.Identity!.GetCompanyId());
                 }
 
-                return RedirectToAction(nameof(Details), new {id = viewModel.Project!.Id});
+                return RedirectToAction(nameof(Details), new {id = projectId});
             }
 
             return BadRequest();
         }
 
-        // GET: AssignPM
-        [Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")]
-        public async Task<IActionResult> EditMembers(int? id)
-        {
-            if (id is null or 0)
-            {
-                return NotFound();
-            }
-
-            Project? project = await _projectService.GetProjectByIdAsync(id.Value, User.Identity!.GetCompanyId());
-
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            List<BTUser> members = await _companyService.GetCompanyMembersAsync(User.Identity!.GetCompanyId());
-            List<BTUser> current = new();
-            List<BTUser> unassigned = new();
-
-            foreach(BTUser member in members)
-            {
-                if(await _rolesService.IsUserInRole(member,nameof(BTRoles.Developer)) || await _rolesService.IsUserInRole(member, nameof(BTRoles.Submitter)))
-                {
-                    if (project.Members.Contains(member))
-                    {
-                        current.Add(member);
-                    }
-                    else
-                    {
-                        unassigned.Add(member);
-                    }
-                }
-            }
-
-            AssignMemberViewModel viewModel = new AssignMemberViewModel()
-            {
-                Project = project,
-                CurrentList = new SelectList(current, "Id", "FullName"),
-                UnassignedList = new SelectList(unassigned, "Id", "FullName")
-            };
-
-            return View(viewModel);
-        }
-
         [HttpPost]
         [Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditMembers(AssignMemberViewModel viewModel)
+        public async Task<IActionResult> EditMembers(int? projectId, string? memberId)
         {
-            if (viewModel.Project?.Id is not null)
+            if (projectId is not null)
             {
-                Project? project = await _projectService.GetProjectByIdAsync(viewModel.Project.Id, User.Identity!.GetCompanyId());
+                Project? project = await _projectService.GetProjectByIdAsync(projectId.Value, User.Identity!.GetCompanyId());
 
                 if (project == null)
                 {
@@ -153,9 +105,9 @@ namespace BugTracker.Controllers
 
                 List<BTUser> members = await _companyService.GetCompanyMembersAsync(User.Identity!.GetCompanyId());
 
-                if (!string.IsNullOrEmpty(viewModel.MemberId))
+                if (!string.IsNullOrEmpty(memberId))
                 {
-                    BTUser? member = members.FirstOrDefault(u => u.Id == viewModel.MemberId);
+                    BTUser? member = members.FirstOrDefault(u => u.Id == memberId);
                     if(member is not null)
                     {
                         if (project.Members.Contains(member))
@@ -170,32 +122,7 @@ namespace BugTracker.Controllers
                     }
                 }
 
-                List<BTUser> current = new();
-                List<BTUser> unassigned = new();
-
-                foreach (BTUser member in members)
-                {
-                    if (await _rolesService.IsUserInRole(member, nameof(BTRoles.Developer)) || await _rolesService.IsUserInRole(member, nameof(BTRoles.Submitter)))
-                    {
-                        if (project.Members.Contains(member))
-                        {
-                            current.Add(member);
-                        }
-                        else
-                        {
-                            unassigned.Add(member);
-                        }
-                    }
-                }
-
-                AssignMemberViewModel newViewModel = new AssignMemberViewModel()
-                {
-                    Project = project,
-                    CurrentList = new SelectList(current, "Id", "FullName"),
-                    UnassignedList = new SelectList(unassigned, "Id", "FullName")
-                };
-
-                return View(newViewModel);
+                return RedirectToAction(nameof(Details), new { id = projectId });
             }
 
             return BadRequest();
@@ -259,7 +186,7 @@ namespace BugTracker.Controllers
                 }
 
                 await _projectService.AddProjectAsync(project);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = project.Id });
             }
 
             var priorities = await _projectService.GetProjectPrioritiesAsync();
@@ -320,7 +247,7 @@ namespace BugTracker.Controllers
                 {
                     throw;
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = project.Id });
             }
 
             var priorities = await _projectService.GetProjectPrioritiesAsync();
@@ -357,9 +284,11 @@ namespace BugTracker.Controllers
             if (project != null)
             {
                 await _projectService.ArchiveProjectAsync(project, User.Identity!.GetCompanyId());
+
+                return RedirectToAction(nameof(Details), new { id = project.Id });
             }
-            
-            return RedirectToAction(nameof(Index));
+
+            return NotFound();
         }
 
         // GET: Projects/Delete/5
@@ -388,32 +317,14 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> RestoreConfirmed(int id)
         {
             var project = await _projectService.GetProjectByIdAsync(id, User.Identity!.GetCompanyId());
-            if (project != null)
+            if (project is not null)
             {
                 await _projectService.RestoreProjectAsync(project, User.Identity!.GetCompanyId());
+
+                return RedirectToAction(nameof(Details), new { id = project.Id });
             }
 
-            return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> MyProjects()
-        {
-            return View(await _projectService.GetUserProjectsAsync(_userManager.GetUserId(User)!));
-        }
-
-        public async Task<IActionResult> AllProjects()
-        {
-            return View(await _projectService.GetProjectsByCompanyIdAsync(User.Identity!.GetCompanyId()));
-        }
-
-        public async Task<IActionResult> ArchivedProjects()
-        {
-            return View(await _projectService.GetArchivedProjectsAsync(User.Identity!.GetCompanyId()));
-        }
-
-        public async Task<IActionResult> UnassignedProjects()
-        {
-            return View(await _projectService.GetUnassignedProjectsAsync(User.Identity!.GetCompanyId()));
+            return NotFound();
         }
     }
 }

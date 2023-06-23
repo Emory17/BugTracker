@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using BugTracker.Models.Enums;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<BTUser> _userManager;
+
+@{
+    BTUser? btUser = User.Identity!.IsAuthenticated ? await _userManager.GetUserAsync(User) : new();
+}
+
+<!DOCTYPE html>
 <!--
 Template Name: Icewall - HTML Admin Dashboard Template
 Author: Left4code
@@ -29,539 +37,142 @@ License: You must have a valid license purchased only from themeforest(the above
     <div class="mobile-menu d-md-none">
         <div class="mobile-menu-bar">
             <a href="" class="d-flex me-auto">
-                <img alt="Icewall Bootstrap HTML Admin Template" class="w-6" src="dist/images/logo.svg">
+                <img alt="Icewall Bootstrap HTML Admin Template" class="w-6" src="~/dist/images/logo.svg">
             </a>
             <a href="javascript:;" id="mobile-menu-toggler" class="mobile-menu-bar__toggler"> <i data-feather="bar-chart-2" class="w-8 h-8 text-white"></i> </a>
         </div>
         <ul class="mobile-menu-wrapper border-top border-theme-2 dark-border-dark-3 py-5">
-            <li>
-                <a href="javascript:;.html" class="menu menu--active">
-                    <div class="menu__icon"> <i data-feather="home"></i> </div>
-                    <div class="menu__title"> Dashboard <i data-feather="chevron-down" class="menu__sub-icon menu__sub-icon--active"></i> </div>
-                </a>
-                <ul class="menu__sub-open">
-                    <li>
-                        <a href="index.html" class="menu menu--active">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Overview 1 </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-dashboard-overview-2.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Overview 2 </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-dashboard-overview-3.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Overview 3 </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="javascript:;" class="menu">
-                    <div class="menu__icon"> <i data-feather="box"></i> </div>
-                    <div class="menu__title"> Menu Layout <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                </a>
-                <ul class="">
-                    <li>
-                        <a href="index.html" class="menu menu--active">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Side Menu </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="simple-menu-light-dashboard-overview-1.html" class="menu menu--active">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Simple Menu </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="top-menu-light-dashboard-overview-1.html" class="menu menu--active">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Top Menu </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="side-menu-light-inbox.html" class="menu">
-                    <div class="menu__icon"> <i data-feather="inbox"></i> </div>
-                    <div class="menu__title"> Inbox </div>
-                </a>
-            </li>
-            <li>
-                <a href="side-menu-light-file-manager.html" class="menu">
-                    <div class="menu__icon"> <i data-feather="hard-drive"></i> </div>
-                    <div class="menu__title"> File Manager </div>
-                </a>
-            </li>
-            <li>
-                <a href="side-menu-light-point-of-sale.html" class="menu">
-                    <div class="menu__icon"> <i data-feather="credit-card"></i> </div>
-                    <div class="menu__title"> Point of Sale </div>
-                </a>
-            </li>
-            <li>
-                <a href="side-menu-light-chat.html" class="menu">
-                    <div class="menu__icon"> <i data-feather="message-square"></i> </div>
-                    <div class="menu__title"> Chat </div>
-                </a>
-            </li>
-            <li>
-                <a href="side-menu-light-post.html" class="menu">
-                    <div class="menu__icon"> <i data-feather="file-text"></i> </div>
-                    <div class="menu__title"> Post </div>
-                </a>
-            </li>
-            <li>
-                <a href="side-menu-light-calendar.html" class="menu">
-                    <div class="menu__icon"> <i data-feather="calendar"></i> </div>
-                    <div class="menu__title"> Calendar </div>
-                </a>
-            </li>
-            <li class="menu__devider my-6"></li>
-            <li>
-                <a href="javascript:;" class="menu">
-                    <div class="menu__icon"> <i data-feather="edit"></i> </div>
-                    <div class="menu__title"> Crud <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                </a>
-                <ul class="">
-                    <li>
-                        <a href="side-menu-light-crud-data-list.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Data List </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-crud-form.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Form </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="javascript:;" class="menu">
-                    <div class="menu__icon"> <i data-feather="users"></i> </div>
-                    <div class="menu__title"> Users <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                </a>
-                <ul class="">
-                    <li>
-                        <a href="side-menu-light-users-layout-1.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Layout 1 </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-users-layout-2.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Layout 2 </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-users-layout-3.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Layout 3 </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="javascript:;" class="menu">
-                    <div class="menu__icon"> <i data-feather="trello"></i> </div>
-                    <div class="menu__title"> Profile <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                </a>
-                <ul class="">
-                    <li>
-                        <a href="side-menu-light-profile-overview-1.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Overview 1 </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-profile-overview-2.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Overview 2 </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-profile-overview-3.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Overview 3 </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="javascript:;" class="menu">
-                    <div class="menu__icon"> <i data-feather="layout"></i> </div>
-                    <div class="menu__title"> Pages <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                </a>
-                <ul class="">
-                    <li>
-                        <a href="javascript:;" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Wizards <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                        </a>
-                        <ul class="">
+            @if (!User.Identity!.IsAuthenticated)
+            {
+                <li>
+                    <a asp-controller="Home" asp-action="Index" class="menu">
+                        <div class="menu__icon"> <i data-feather="home"></i> </div>
+                        <div class="menu__title"> Home </div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-area="Identity" asp-page="/Account/Login" class="menu">
+                        <div class="menu__icon"> <i data-feather="log-in"></i> </div>
+                        <div class="menu__title"> Sign In </div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="menu">
+                        <div class="menu__icon"> <i data-feather="trello"></i> </div>
+                        <div class="menu__title"> Register Company </div>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a asp-controller="Home" asp-action="Dashboard" class="menu">
+                        <div class="menu__icon"> <i data-feather="home"></i> </div>
+                        <div class="menu__title"> Dashboard </div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Company" asp-action="Index" class="menu">
+                        <div class="menu__icon"> <i data-feather="trello"></i> </div>
+                        <div class="menu__title"> Company </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" class="menu">
+                        <div class="menu__icon"> <i data-feather="layout"></i> </div>
+                        <div class="menu__title">
+                            Projects
+                            <div class="menu__sub-icon"> <i data-feather="chevron-down"></i> </div>
+                        </div>
+                    </a>
+                    <ul class="">
+                        @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
+                        {
                             <li>
-                                <a href="side-menu-light-wizard-layout-1.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 1</div>
+                                <a asp-controller="Projects" asp-action="Create" class="menu">
+                                    <div class="menu__icon"> <i data-feather="plus-circle"></i> </div>
+                                    <div class="menu__title"> New Project </div>
+                                </a>
+                            </li>
+                        }
+                        @if (!User.IsInRole(nameof(BTRoles.Admin)))
+                        {
+                            <li>
+                                <a asp-controller="Projects" asp-action="MyProjects" class="menu">
+                                    <div class="menu__icon"> <i data-feather="target"></i> </div>
+                                    <div class="menu__title"> My Projects </div>
+                                </a>
+                            </li>
+                        }
+                        <li>
+                            <a asp-controller="Projects" asp-action="AllProjects" class="menu">
+                                <div class="menu__icon"> <i data-feather="circle"></i> </div>
+                                <div class="menu__title"> All Projects </div>
+                            </a>
+                        </li>
+                        @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
+                        {
+                            <li>
+                                <a asp-controller="Projects" asp-action="UnassignedProjects" class="menu">
+                                    <div class="menu__icon"> <i data-feather="alert-circle"></i> </div>
+                                    <div class="menu__title"> Unassigned Projects </div>
                                 </a>
                             </li>
                             <li>
-                                <a href="side-menu-light-wizard-layout-2.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 2</div>
+                                <a asp-controller="Projects" asp-action="ArchivedProjects" class="menu">
+                                    <div class="menu__icon"> <i data-feather="help-circle"></i> </div>
+                                    <div class="menu__title"> Archived Projects </div>
                                 </a>
                             </li>
+                        }
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript:;" class="menu">
+                        <div class="menu__icon"> <i data-feather="file-text"></i> </div>
+                        <div class="menu__title">
+                            Tickets
+                            <div class="menu__sub-icon"> <i data-feather="chevron-down"></i> </div>
+                        </div>
+                    </a>
+                    <ul class="">
+                        <li>
+                            <a asp-controller="Tickets" asp-action="Create" class="menu">
+                                <div class="menu__icon"> <i data-feather="file-plus"></i> </div>
+                                <div class="menu__title"> New Ticket </div>
+                            </a>
+                        </li>
+                        @if (!User.IsInRole(nameof(BTRoles.Admin)))
+                        {
                             <li>
-                                <a href="side-menu-light-wizard-layout-3.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 3</div>
+                                <a asp-controller="Tickets" asp-action="MyTickets" class="menu">
+                                    <div class="menu__icon"> <i data-feather="tablet"></i> </div>
+                                    <div class="menu__title"> My Tickets </div>
                                 </a>
                             </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Blog <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                        </a>
-                        <ul class="">
-                            <li>
-                                <a href="side-menu-light-blog-layout-1.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 1</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-blog-layout-2.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 2</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-blog-layout-3.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 3</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Pricing <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                        </a>
-                        <ul class="">
-                            <li>
-                                <a href="side-menu-light-pricing-layout-1.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 1</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-pricing-layout-2.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 2</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Invoice <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                        </a>
-                        <ul class="">
-                            <li>
-                                <a href="side-menu-light-invoice-layout-1.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 1</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-invoice-layout-2.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 2</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> FAQ <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                        </a>
-                        <ul class="">
-                            <li>
-                                <a href="side-menu-light-faq-layout-1.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 1</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-faq-layout-2.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 2</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-faq-layout-3.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Layout 3</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="login-light-login.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Login </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="login-light-register.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Register </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="main-light-error-page.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Error Page </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-update-profile.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Update profile </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-change-password.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Change Password </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="menu__devider my-6"></li>
-            <li>
-                <a href="javascript:;" class="menu">
-                    <div class="menu__icon"> <i data-feather="inbox"></i> </div>
-                    <div class="menu__title"> Components <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                </a>
-                <ul class="">
-                    <li>
-                        <a href="javascript:;" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Table <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                        </a>
-                        <ul class="">
-                            <li>
-                                <a href="side-menu-light-regular-table.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Regular Table</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-tabulator.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Tabulator</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Overlay <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                        </a>
-                        <ul class="">
-                            <li>
-                                <a href="side-menu-light-modal.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Modal</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-slide-over.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Slide Over</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-notification.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Notification</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-accordion.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Accordion </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-button.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Button </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-alert.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Alert </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-progress-bar.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Progress Bar </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-tooltip.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Tooltip </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-dropdown.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Dropdown </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-typography.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Typography </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-icon.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Icon </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-loading-icon.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Loading Icon </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="javascript:;" class="menu">
-                    <div class="menu__icon"> <i data-feather="sidebar"></i> </div>
-                    <div class="menu__title"> Forms <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                </a>
-                <ul class="">
-                    <li>
-                        <a href="side-menu-light-regular-form.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Regular Form </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-datepicker.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Datepicker </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-tom-select.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Tom Select </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-file-upload.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> File Upload </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Wysiwyg Editor <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                        </a>
-                        <ul class="">
-                            <li>
-                                <a href="side-menu-light-wysiwyg-editor-classic.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Classic</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-wysiwyg-editor-inline.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Inline</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-wysiwyg-editor-balloon.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Balloon</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-wysiwyg-editor-balloon-block.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Balloon Block</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="side-menu-light-wysiwyg-editor-document.html" class="menu">
-                                    <div class="menu__icon"> <i data-feather="zap"></i> </div>
-                                    <div class="menu__title">Document</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-validation.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Validation </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="javascript:;" class="menu">
-                    <div class="menu__icon"> <i data-feather="hard-drive"></i> </div>
-                    <div class="menu__title"> Widgets <i data-feather="chevron-down" class="menu__sub-icon "></i> </div>
-                </a>
-                <ul class="">
-                    <li>
-                        <a href="side-menu-light-chart.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Chart </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-slider.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Slider </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="side-menu-light-image-zoom.html" class="menu">
-                            <div class="menu__icon"> <i data-feather="activity"></i> </div>
-                            <div class="menu__title"> Image Zoom </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+                        }
+                        <li>
+                            <a asp-controller="Tickets" asp-action="AllTickets" class="menu">
+                                <div class="menu__icon"> <i data-feather="file-text"></i> </div>
+                                <div class="menu__title"> All Tickets </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Tickets" asp-action="UnassignedTickets" class="menu">
+                                <div class="menu__icon"> <i data-feather="file-minus"></i> </div>
+                                <div class="menu__title"> Unassigned Tickets </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Tickets" asp-action="ArchivedTickets" class="menu">
+                                <div class="menu__icon"> <i data-feather="folder"></i> </div>
+                                <div class="menu__title"> Archived Tickets </div>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+            }
         </ul>
     </div>
     <!-- END: Mobile Menu -->
@@ -569,126 +180,41 @@ License: You must have a valid license purchased only from themeforest(the above
     <div class="top-bar-boxed border-bottom border-theme-2 dark-border-dark-3 mt-n7 mt-md-n5 mx-n3 mx-sm-n8 px-3 px-sm-8 mb-12">
         <div class="h-full d-flex align-items-center">
             <!-- BEGIN: Logo -->
-            <a href="" class="-intro-x d-none d-md-flex">
-                <img alt="Icewall Bootstrap HTML Admin Template" class="w-6" src="dist/images/logo.svg">
-                <span class="text-white fs-lg ms-3"> Ice<span class="fw-medium">wall</span> </span>
+            <a href="" class="-intro-x d-none d-md-flex ms-5 me-auto">
+                <img class="w-6" src="~/img/ESoperLogoTransparent.png">
+                <span class="text-white fs-lg ms-3"> Issue Tracker </span>
             </a>
             <!-- END: Logo -->
-            <!-- BEGIN: Breadcrumb -->
+            <!-- BEGIN: Breadcrumb --
             <div class="-intro-x breadcrumb me-auto"> <a href="">Application</a> <i data-feather="chevron-right" class="breadcrumb__icon"></i> <a href="" class="breadcrumb--active">Dashboard</a> </div>
-            <!-- END: Breadcrumb -->
-            <partial name="_LoginPartial" />
-            <!-- BEGIN: Notifications
-            <div class="intro-x dropdown me-4 me-sm-6">
-                <div class="dropdown-toggle notification notification--bullet cursor-pointer" role="button" aria-expanded="false" data-bs-toggle="dropdown"> <i data-feather="bell" class="notification__icon dark-text-gray-300"></i> </div>
-                <div class="notification-content pt-2 dropdown-menu">
-                    <div class="notification-content__box dropdown-content">
-                        <div class="notification-content__title dark-text-gray-300">Notifications</div>
-                        <div class="cursor-pointer position-relative d-flex align-items-center ">
-                            <div class="w-12 h-12 flex-none image-fit me-1">
-                                <img alt="Icewall Bootstrap HTML Admin Template" class="rounded-pill" src="dist/images/profile-5.jpg">
-                                <div class="w-3 h-3 bg-theme-10 position-absolute end-0 bottom-0 rounded-pill border-2 border-white dark-border-dark-3"></div>
-                            </div>
-                            <div class="ms-2 overflow-hidden">
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:;" class="fw-medium truncate me-5 dark-text-gray-300">Denzel Washington</a>
-                                    <div class="fs-xs text-gray-500 ms-auto text-nowrap">06:05 AM</div>
-                                </div>
-                                <div class="w-full truncate text-gray-600 mt-0.5">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem </div>
-                            </div>
-                        </div>
-                        <div class="cursor-pointer position-relative d-flex align-items-center mt-5">
-                            <div class="w-12 h-12 flex-none image-fit me-1">
-                                <img alt="Icewall Bootstrap HTML Admin Template" class="rounded-pill" src="dist/images/profile-3.jpg">
-                                <div class="w-3 h-3 bg-theme-10 position-absolute end-0 bottom-0 rounded-pill border-2 border-white dark-border-dark-3"></div>
-                            </div>
-                            <div class="ms-2 overflow-hidden">
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:;" class="fw-medium truncate me-5 dark-text-gray-300">Keanu Reeves</a>
-                                    <div class="fs-xs text-gray-500 ms-auto text-nowrap">05:09 AM</div>
-                                </div>
-                                <div class="w-full truncate text-gray-600 mt-0.5">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem </div>
-                            </div>
-                        </div>
-                        <div class="cursor-pointer position-relative d-flex align-items-center mt-5">
-                            <div class="w-12 h-12 flex-none image-fit me-1">
-                                <img alt="Icewall Bootstrap HTML Admin Template" class="rounded-pill" src="dist/images/profile-5.jpg">
-                                <div class="w-3 h-3 bg-theme-10 position-absolute end-0 bottom-0 rounded-pill border-2 border-white dark-border-dark-3"></div>
-                            </div>
-                            <div class="ms-2 overflow-hidden">
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:;" class="fw-medium truncate me-5 dark-text-gray-300">Johnny Depp</a>
-                                    <div class="fs-xs text-gray-500 ms-auto text-nowrap">01:10 PM</div>
-                                </div>
-                                <div class="w-full truncate text-gray-600 mt-0.5">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem </div>
-                            </div>
-                        </div>
-                        <div class="cursor-pointer position-relative d-flex align-items-center mt-5">
-                            <div class="w-12 h-12 flex-none image-fit me-1">
-                                <img alt="Icewall Bootstrap HTML Admin Template" class="rounded-pill" src="dist/images/profile-9.jpg">
-                                <div class="w-3 h-3 bg-theme-10 position-absolute end-0 bottom-0 rounded-pill border-2 border-white dark-border-dark-3"></div>
-                            </div>
-                            <div class="ms-2 overflow-hidden">
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:;" class="fw-medium truncate me-5 dark-text-gray-300">Robert De Niro</a>
-                                    <div class="fs-xs text-gray-500 ms-auto text-nowrap">05:09 AM</div>
-                                </div>
-                                <div class="w-full truncate text-gray-600 mt-0.5">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem </div>
-                            </div>
-                        </div>
-                        <div class="cursor-pointer position-relative d-flex align-items-center mt-5">
-                            <div class="w-12 h-12 flex-none image-fit me-1">
-                                <img alt="Icewall Bootstrap HTML Admin Template" class="rounded-pill" src="dist/images/profile-15.jpg">
-                                <div class="w-3 h-3 bg-theme-10 position-absolute end-0 bottom-0 rounded-pill border-2 border-white dark-border-dark-3"></div>
-                            </div>
-                            <div class="ms-2 overflow-hidden">
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:;" class="fw-medium truncate me-5 dark-text-gray-300">Leonardo DiCaprio</a>
-                                    <div class="fs-xs text-gray-500 ms-auto text-nowrap">01:10 PM</div>
-                                </div>
-                                <div class="w-full truncate text-gray-600 mt-0.5">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomi</div>
-                            </div>
-                        </div>
+            -- END: Breadcrumb -->
+            @if (User.Identity!.IsAuthenticated)
+            {
+                <div class="fw-medium text-white">Hello @btUser!.FullName</div>
+                <!-- BEGIN: Account Menu -->
+                <div class="account-menu intro-x dropdown w-8 h-8 ms-5">
+                    <div class="dropdown-toggle w-8 h-8 rounded-pill overflow-hidden shadow-lg image-fit zoom-in" role="button" aria-expanded="false" data-bs-toggle="dropdown">
+                        <img src="~/img/DefaultProfileImage.jpg">
+                    </div>
+                    <div class="dropdown-menu w-56">
+                        <ul class="dropdown-content bg-theme-11 dark-bg-dark-6">
+                            <li class="p-2">
+                                <div class="fw-medium text-white">@btUser!.FullName</div>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider border-theme-12 dark-border-dark-3">
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-white bg-theme-1-hover dark-bg-dark-3-hover" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"> <i data-feather="user" class="w-4 h-4 me-2"></i> Profile </a>
+                            </li>
+                            <li>
+                                <a href="javascript:document.getElementById('logoutForm').submit();" class="dropdown-item text-white bg-theme-1-hover dark-bg-dark-3-hover"> <i data-feather="toggle-right" class="w-4 h-4 me-2"></i> Logout </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </div>
-             END: Notifications -->
-            <!-- BEGIN: Account Menu -->
-            <div class="account-menu intro-x dropdown w-8 h-8">
-                <div class="dropdown-toggle w-8 h-8 rounded-pill overflow-hidden shadow-lg image-fit zoom-in" role="button" aria-expanded="false" data-bs-toggle="dropdown">
-                    <img alt="Icewall Bootstrap HTML Admin Template" src="~/dist/images/profile-13.jpg">
-                </div>
-                <div class="dropdown-menu w-56">
-                    <ul class="dropdown-content bg-theme-11 dark-bg-dark-6">
-                        <li class="p-2">
-                            <div class="fw-medium text-white">Denzel Washington</div>
-                            <div class="fs-xs text-theme-13 mt-0.5 dark-text-gray-600">Frontend Engineer</div>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider border-theme-12 dark-border-dark-3">
-                        </li>
-                        <li>
-                            <a href="" class="dropdown-item text-white bg-theme-1-hover dark-bg-dark-3-hover"> <i data-feather="user" class="w-4 h-4 me-2"></i> Profile </a>
-                        </li>
-                        <li>
-                            <a href="" class="dropdown-item text-white bg-theme-1-hover dark-bg-dark-3-hover"> <i data-feather="edit" class="w-4 h-4 me-2"></i> Add Account </a>
-                        </li>
-                        <li>
-                            <a href="" class="dropdown-item text-white bg-theme-1-hover dark-bg-dark-3-hover"> <i data-feather="lock" class="w-4 h-4 me-2"></i> Reset Password </a>
-                        </li>
-                        <li>
-                            <a href="" class="dropdown-item text-white bg-theme-1-hover dark-bg-dark-3-hover"> <i data-feather="help-circle" class="w-4 h-4 me-2"></i> Help </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider border-theme-12 dark-border-dark-3">
-                        </li>
-                        <li>
-                            <a href="" class="dropdown-item text-white bg-theme-1-hover dark-bg-dark-3-hover"> <i data-feather="toggle-right" class="w-4 h-4 me-2"></i> Logout </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- END: Account Menu -->
+                <!-- END: Account Menu -->
+            }
         </div>
     </div>
     <!-- END: Top Bar -->
@@ -700,19 +226,19 @@ License: You must have a valid license purchased only from themeforest(the above
                     @if (!User.Identity!.IsAuthenticated)
                     {
                         <li>
-                            <a asp-controller="Home" asp-action="Index" class="side-menu side-menu__active">
+                            <a asp-controller="Home" asp-action="Index" class="side-menu">
                                 <div class="side-menu__icon"> <i data-feather="home"></i> </div>
                                 <div class="side-menu__title"> Home </div>
                             </a>
                         </li>
                         <li>
-                            <a asp-area="Identity" asp-page="/Account/Login">
+                            <a asp-area="Identity" asp-page="/Account/Login" class="side-menu">
                                 <div class="side-menu__icon"> <i data-feather="log-in"></i> </div>
                                 <div class="side-menu__title"> Sign In </div>
                             </a>
                         </li>
                         <li>
-                            <a asp-area="Identity" asp-page="/Account/Register">
+                            <a asp-area="Identity" asp-page="/Account/Register" class="side-menu">
                                 <div class="side-menu__icon"> <i data-feather="trello"></i> </div>
                                 <div class="side-menu__title"> Register Company </div>
                             </a>
@@ -721,7 +247,7 @@ License: You must have a valid license purchased only from themeforest(the above
                     else
                     {
                         <li>
-                            <a asp-controller="Home" asp-action="Dashboard" class="side-menu side-menu__active">
+                            <a asp-controller="Home" asp-action="Dashboard" class="side-menu">
                                 <div class="side-menu__icon"> <i data-feather="home"></i> </div>
                                 <div class="side-menu__title"> Dashboard </div>
                             </a>
@@ -733,12 +259,6 @@ License: You must have a valid license purchased only from themeforest(the above
                             </a>
                         </li>
                         <li>
-                            <a asp-controller="Company" asp-action="ManageUserRoles" class="side-menu">
-                                <div class="side-menu__icon"> <i data-feather="trello"></i> </div>
-                                <div class="side-menu__title"> Manage User Roles </div>
-                            </a>
-                        </li>
-                        <li>
                             <a href="javascript:;" class="side-menu">
                                 <div class="side-menu__icon"> <i data-feather="layout"></i> </div>
                                 <div class="side-menu__title">
@@ -747,44 +267,45 @@ License: You must have a valid license purchased only from themeforest(the above
                                 </div>
                             </a>
                             <ul class="">
-                                @* Temp *@
+                                @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
+                                {
+                                    <li>
+                                        <a asp-controller="Projects" asp-action="Create" class="side-menu">
+                                            <div class="side-menu__icon"> <i data-feather="plus-circle"></i> </div>
+                                            <div class="side-menu__title"> New Project </div>
+                                        </a>
+                                    </li>
+                                }
+                                @if(!User.IsInRole(nameof(BTRoles.Admin)))
+                                {
+                                    <li>
+                                        <a asp-controller="Projects" asp-action="Index" asp-route-title="My Projects" class="side-menu">
+                                            <div class="side-menu__icon"> <i data-feather="target"></i> </div>
+                                            <div class="side-menu__title"> My Projects </div>
+                                        </a>
+                                    </li>
+                                }
                                 <li>
-                                    <a asp-controller="Projects" asp-action="Index" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                        <div class="side-menu__title"> Project Index </div>
-                                    </a>
-                                </li>
-                                @*
-                            This link should be shown for everyone except admins
-                            All projects this user is currently a member of
-                            *@
-                                <li>
-                                    <a asp-controller="Projects" asp-action="MyProjects" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                        <div class="side-menu__title"> My Projects </div>
-                                    </a>
-                                </li>
-                                @* All (unarchived) projects in this company *@
-                                <li>
-                                    <a asp-controller="Projects" asp-action="AllProjects" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                    <a asp-controller="Projects" asp-action="Index" asp-route-title="All Projects" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="circle"></i> </div>
                                         <div class="side-menu__title"> All Projects </div>
                                     </a>
                                 </li>
-                                @* Archived projects in this company *@
-                                <li>
-                                    <a asp-controller="Projects" asp-action="ArchivedProjects" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                        <div class="side-menu__title"> Archived Projects </div>
-                                    </a>
-                                </li>
-                                @* Projects with no PM *@
-                                <li>
-                                    <a asp-controller="Projects" asp-action="UnassignedProjects" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                        <div class="side-menu__title"> Unassigned Projects </div>
-                                    </a>
-                                </li>
+                                @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
+                                {
+                                    <li>
+                                        <a asp-controller="Projects" asp-action="Index" asp-route-title="Unassigned Projects" class="side-menu">
+                                            <div class="side-menu__icon"> <i data-feather="alert-circle"></i> </div>
+                                            <div class="side-menu__title"> Unassigned Projects </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a asp-controller="Projects" asp-action="Index" asp-route-title="Archived Projects" class="side-menu">
+                                            <div class="side-menu__icon"> <i data-feather="help-circle"></i> </div>
+                                            <div class="side-menu__title"> Archived Projects </div>
+                                        </a>
+                                    </li>
+                                }
                             </ul>
                         </li>
                         <li>
@@ -796,53 +317,41 @@ License: You must have a valid license purchased only from themeforest(the above
                                 </div>
                             </a>
                             <ul class="">
-                                @* Temp *@
                                 <li>
-                                    <a asp-controller="Tickets" asp-action="Index" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                        <div class="side-menu__title"> Ticket Index </div>
+                                    <a asp-controller="Tickets" asp-action="Create" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="file-plus"></i> </div>
+                                        <div class="side-menu__title"> New Ticket </div>
                                     </a>
                                 </li>
-                                @*
-                            Admins -> this link does not appear
-                            PMs -> all tickets for their projects
-                            Developers -> all tickets where they are the DeveloperUser or SubmitterUser
-                            Submitters -> all tickets where they are the SubmitterUser
-                            *@
+                                @if (!User.IsInRole(nameof(BTRoles.Admin)))
+                                {
+                                    <li>
+                                        <a asp-controller="Tickets" asp-action="Index" asp-route-title="My Tickets" class="side-menu">
+                                            <div class="side-menu__icon"> <i data-feather="tablet"></i> </div>
+                                            <div class="side-menu__title"> My Tickets </div>
+                                        </a>
+                                    </li>
+                                }
                                 <li>
-                                    <a asp-controller="Tickets" asp-action="MyTickets" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                        <div class="side-menu__title"> My Tickets </div>
-                                    </a>
-                                </li>
-                                @* All (unarchived) tickets in this company *@
-                                <li>
-                                    <a asp-controller="Tickets" asp-action="AllTickets" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                    <a asp-controller="Tickets" asp-action="Index" asp-route-title="All Tickets" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="file-text"></i> </div>
                                         <div class="side-menu__title"> All Tickets </div>
                                     </a>
                                 </li>
-                                @* Archived tickets in this company *@
                                 <li>
-                                    <a asp-controller="Tickets" asp-action="ArchivedTickets" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
-                                        <div class="side-menu__title"> Archived Tickets </div>
-                                    </a>
-                                </li>
-                                @* Tickets with no developer assigned *@
-                                <li>
-                                    <a asp-controller="Tickets" asp-action="UnassignedTickets" class="side-menu">
-                                        <div class="side-menu__icon"> <i data-feather="activity"></i> </div>
+                                    <a asp-controller="Tickets" asp-action="Index" asp-route-title="Unassigned Tickets" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="file-minus"></i> </div>
                                         <div class="side-menu__title"> Unassigned Tickets </div>
                                     </a>
                                 </li>
+                                <li>
+                                    <a asp-controller="Tickets" asp-action="Index" asp-route-title="Archived Tickets" class="side-menu">
+                                        <div class="side-menu__icon"> <i data-feather="folder"></i> </div>
+                                        <div class="side-menu__title"> Archived Tickets </div>
+                                    </a>
+                                </li>
+                                
                             </ul>
-                        </li>
-                        <li>
-                            <a asp-controller="Notifications" asp-action="Index" class="side-menu">
-                                <div class="side-menu__icon"> <i data-feather="inbox"></i> </div>
-                                <div class="side-menu__title"> Notifications </div>
-                            </a>
                         </li>
                     }
                 </ul>
@@ -855,20 +364,22 @@ License: You must have a valid license purchased only from themeforest(the above
             <!-- END: Content -->
         </div>
     </div>
-    <!-- BEGIN: Dark Mode Switcher-->
+
+    <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post"></form>
+    <!-- BEGIN: Dark Mode Switcher--
     <div data-url="side-menu-dark-dashboard-overview-1.html" class="dark-mode-switcher cursor-pointer shadow-md position-fixed bottom-0 end-0 box dark-bg-dark-2 border rounded-pill w-40 h-12 d-flex align-items-center justify-content-center z-50 mb-10 me-10">
         <div class="me-4 text-gray-700 dark-text-gray-300">Dark Mode</div>
         <div class="dark-mode-switcher__toggle border"></div>
     </div>
-    <!-- END: Dark Mode Switcher-->
+     END: Dark Mode Switcher-->
     <!-- BEGIN: JS Assets-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=[" your-google-map-api"]&libraries=""places"""></script>
     <script src="~/dist/js/app.js"></script>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <!-- END: JS Assets-->
 </body>

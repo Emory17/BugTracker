@@ -22,8 +22,19 @@ namespace BugTracker.Services
         {
             try
             {
-                return (await _userManager.AddToRoleAsync(user, roleName)).Succeeded;
+                if (roleName.Equals(nameof(BTRoles.Admin)) || roleName.Equals(nameof(BTRoles.ProjectManager)))
+                {
+                    List<Project> projects = await _context.Projects.Include(p => p.Members).Where(p => p.Members.Contains(user)).ToListAsync();
 
+                    foreach (Project project in projects)
+                    {
+                        project.Members.Remove(user);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
+                return (await _userManager.AddToRoleAsync(user, roleName)).Succeeded;
             }
             catch (Exception)
             {
@@ -84,6 +95,18 @@ namespace BugTracker.Services
         {
             try
             {
+                if (roleName.Equals(nameof(BTRoles.Developer)))
+                {
+                    List<Ticket> tickets = await _context.Tickets.Where(t => !t.Archived && (t.DeveloperUserId == user.Id)).ToListAsync();
+
+                    foreach (Ticket ticket in tickets)
+                    {
+                        ticket.DeveloperUserId = null;
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
                 bool result = (await _userManager.RemoveFromRoleAsync(user, roleName)).Succeeded;
                 return result;
             }
@@ -97,6 +120,18 @@ namespace BugTracker.Services
         {
             try
             {
+                if(roleNames.Contains(nameof(BTRoles.Developer)))
+                {
+                    List<Ticket> tickets = await _context.Tickets.Where(t => !t.Archived && (t.DeveloperUserId == user.Id)).ToListAsync();
+
+                    foreach (Ticket ticket in tickets) 
+                    {
+                        ticket.DeveloperUserId = null;
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
                 bool result = (await _userManager.RemoveFromRolesAsync(user, roleNames)).Succeeded;
                 return result;
             }

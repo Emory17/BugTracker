@@ -38,56 +38,59 @@ namespace BugTracker.Controllers
         }
 
         // GET: Tickets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? title)
         {
-            return View(await _ticketService.GetTicketsByCompanyIdAsync(User.Identity!.GetCompanyId()));
-        }
-
-        // GET: AssignPM
-        [Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")]
-        public async Task<IActionResult> AssignDeveloper(int? id)
-        {
-            if (id is null or 0)
+            if (string.IsNullOrEmpty(title))
             {
                 return NotFound();
             }
 
-            Ticket? ticket = await _ticketService.GetTicketByIdAsync(id.Value, User.Identity!.GetCompanyId());
+            List<Ticket> tickets = new();
 
-            if (ticket == null)
+            if (title == "My Tickets")
             {
-                return NotFound();
+                tickets = await _ticketService.GetUserTicketsAsync(_userManager.GetUserId(User)!);
+            }
+            else if (title == "All Tickets")
+            {
+                tickets = await _ticketService.GetTicketsByCompanyIdAsync(User.Identity!.GetCompanyId());
+            }
+            else if (title == "Archived Tickets")
+            {
+                tickets = await _ticketService.GetArchivedTicketsAsync(User.Identity!.GetCompanyId());
+            }
+            else if (title == "Unassigned Tickets")
+            {
+                tickets = await _ticketService.GetUnassignedTicketsAsync(User.Identity!.GetCompanyId());
             }
 
-            List<BTUser> developers = await _projectService.GetProjectMembersByRoleAsync(ticket.ProjectId, nameof(BTRoles.Developer), User.Identity!.GetCompanyId());
-            BTUser? currentDev = ticket.DeveloperUser;
-
-            AssignDeveloperViewModel viewModel = new AssignDeveloperViewModel()
-            {
-                Ticket = ticket,
-                DevId = currentDev?.Id,
-                DevList = new SelectList(developers, "Id", "FullName", currentDev?.Id)
-            };
-
-            return View(viewModel);
+            ViewData["Heading"] = title;
+            return View(tickets);
         }
 
         [HttpPost]
         [Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignDeveloper(AssignDeveloperViewModel viewModel)
+        public async Task<IActionResult> AssignDeveloper(int? ticketId, string? devId)
         {
             
-            if (viewModel.Ticket?.Id is not null)
+            if (ticketId is not null)
             {
-                Ticket? ticket = await _ticketService.GetTicketByIdAsync(viewModel.Ticket.Id, User.Identity!.GetCompanyId());
+                Ticket? ticket = await _ticketService.GetTicketByIdAsync(ticketId.Value, User.Identity!.GetCompanyId());
                 if(ticket is not null)
                 {
-                    ticket.DeveloperUserId = viewModel.DevId;
+                    if(string.IsNullOrEmpty(devId))
+                    {
+                        ticket.DeveloperUserId = null;
+                    }
+                    else
+                    {
+                        ticket.DeveloperUserId = devId;
+                    }
 
                     await _ticketService.UpdateTicketAsync(ticket, User.Identity!.GetCompanyId());
 
-                    return RedirectToAction(nameof(Details), new { id = viewModel.Ticket!.Id });
+                    return RedirectToAction(nameof(Details), new { id = ticketId });
                 }
             }
 
@@ -113,13 +116,22 @@ namespace BugTracker.Controllers
         }
 
         // GET: Tickets/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? id)
         {
-            var projects = await _projectService.GetProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
+            List<Project> projects = new();
+            if(User.IsInRole(nameof(BTRoles.Admin)))
+            {
+                projects = await _projectService.GetProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
+            }
+            else
+            {
+                projects = await _projectService.GetUserProjectsAsync(_userManager.GetUserId(User)!);
+            }
+
             var priorities = await _ticketService.GetTicketPriorities();
             var types = await _ticketService.GetTicketTypes();
 
-            ViewData["ProjectId"] = new SelectList(projects, "Id", "Name");
+            ViewData["ProjectId"] = new SelectList(projects, "Id", "Name", id);
             ViewData["TicketPriorityId"] = new SelectList(priorities, "Id", "Name");
             ViewData["TicketTypeId"] = new SelectList(types, "Id", "Name");
             return View();
@@ -295,26 +307,6 @@ namespace BugTracker.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> MyTickets()
-        {
-            return View(await _ticketService.GetUserTicketsAsync(_userManager.GetUserId(User)!));
-        }
-
-        public async Task<IActionResult> AllTickets()
-        {
-            return View(await _ticketService.GetTicketsByCompanyIdAsync(User.Identity!.GetCompanyId()));
-        }
-
-        public async Task<IActionResult> ArchivedTickets()
-        {
-            return View(await _ticketService.GetArchivedTicketsAsync(User.Identity!.GetCompanyId()));
-        }
-
-        public async Task<IActionResult> UnassignedTickets()
-        {
-            return View(await _ticketService.GetUnassignedTicketsAsync(User.Identity!.GetCompanyId()));
         }
 
         [HttpPost]

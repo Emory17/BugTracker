@@ -119,6 +119,8 @@ namespace BugTracker.Services
                                         .ThenInclude(t => t.DeveloperUser)
                                     .Include(p => p.Tickets)
                                         .ThenInclude(t => t.SubmitterUser)
+                                    .Include(p => p.Tickets)
+                                        .ThenInclude(t => t.TicketStatus)
                                     .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
             }
             catch (Exception)

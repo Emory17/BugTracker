@@ -1,123 +1,294 @@
-﻿@using BugTracker.Models.Enums;
+﻿@using BugTracker.Extensions;
+@using BugTracker.Models.Enums;
 @using BugTracker.Services.Interfaces;
 @using Microsoft.AspNetCore.Identity;
 @model BugTracker.Models.Project
 
 @inject IBTFileService _fileService;
 @inject IBTProjectService _projectService;
+@inject IBTRolesService _roleService;
+@inject IBTCompanyService _companyService;
+@inject UserManager<BTUser> _userManager;
 
 @{
     ViewData["Title"] = "Details";
+    BTUser? pm = await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId);
 }
 
-<div class="p-3 d-flex flex-column">
-    <h1>Project Details</h1>
-    <div class="row g-3 mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex">
-                    @* PROJECT'S STATUS *@
-                    @if(Model.Archived)
+<div class="container intro-y">
+    <div class="row g-5 mt-5">
+        <div class="col-8 d-flex">
+            <div class="box py-5 px-10 d-flex flex-column flex-1">
+                <div class="d-flex">
+                    <div class="fs-lg fw-medium">@Model.Name</div>
+                    @if (User.IsInRole(nameof(BTRoles.Admin)) || (User.IsInRole(nameof(BTRoles.ProjectManager)) && pm is not null && pm.Id == _userManager.GetUserId(User)))
                     {
-                        <h5>Archived</h5>
+                        <div class="ms-auto">
+                            <span><a asp-controller="Projects" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-rounded-primary me-1">Edit</a></span>
+                            @if(Model.Archived)
+                            {
+                                <span><a asp-controller="Projects" asp-action="Restore" asp-route-id="@Model.Id" class="btn btn-rounded-dark">Restore</a></span>
+                            }
+                            else
+                            {
+                                <span><a asp-controller="Projects" asp-action="Archive" asp-route-id="@Model.Id" class="btn btn-rounded-danger">Archive</a></span>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="text-lead mt-5">@Model.Description</div>
+                <div class="d-flex mt-5 align-content-between">
+                    <span class="fs-5 btn btn-secondary me-5">Start: @Model.StartDate.ToString("MM-dd-yyyy")</span>
+                    <span class="fs-5 btn btn-secondary me-5">Deadline: @Model.EndDate.ToString("MM-dd-yyyy")</span>
+                    @if (Model.Archived)
+                    {
+                        <span class="fs-5 btn btn-dark">Archived</span>
                     }
                     else if (DateTime.UtcNow.Date > DateTime.SpecifyKind(Model.EndDate, DateTimeKind.Utc).Date)
                     {
-                        <h5>Overdue</h5>
+                        <span class="fs-5 btn btn-danger-soft">Overdue</span>
                     }
                     else
                     {
-                        <h5>In Progress</h5>
-                    }
-                    @* ONLY SHOW THESE BUTTONS IF THEY'RE ALLOWED TO DO THESE ACTIONS *@
-                    <div class="ms-auto">
-                        <a class="btn btn-sm btn-secondary" href="#">Edit</a>
-                        <a class="btn btn-sm btn-secondary" href="#">Archive / Restore</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    @* PROJECT NAME GOES HERE *@
-                    <h5 class="card-title">@Model.Name</h5>
-                    @* Project start date and end date *@
-                    <h6 class="card-subtitle mb-4 text-muted">@Model.StartDate.Date<span> - </span>@Model.EndDate.Date</h6>
-                    <p class="card-text">
-                        @* PROJECT DESCRIPTION GOES HERE *@
-                        @Model.Description
-                    </p>
-                </div>
-                <div class="card-footer fw-bold lead">
-                    @* Either the PM's name or "Unassigned" *@
-                    Project Manager:
-                    @if((await _projectService.GetProjectManagerAsync(Model.Id,Model.CompanyId)) is null)
-                    {
-                        <h5>Unassigned</h5>
-                    }
-                    else
-                    {
-                        <h5>@((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId))!.FullName)</h5>
+                        <span class="fs-5 btn btn-success-soft">In Progress</span>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-12">
-            <div class="row">
-                <div class="col-12 col-lg-6">
-                    <div class="card h-100">
-                        @* DISPLAY LIST OF DEVELOPERS ON PROJECT *@
-                        <div class="card-header">
-                            Developers
-                        </div>
-                        <div class="card-body">
-                            <ul>
-                                @foreach(BTUser member in (await _projectService.GetProjectMembersByRoleAsync(Model.Id,nameof(BTRoles.Developer),Model.CompanyId)))
-                                {
-                                    <li>@member.FullName</li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-6">
-                    <div class="card h-100">
-                        @* DISPLAY LIST OF SUBMITTERS ON PROJECT *@
-                        <div class="card-header">
-                            Submitters
-                        </div>
-                        <div class="card-body">
-                            <ul>
-                                @foreach (BTUser member in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Submitter), Model.CompanyId)))
-                                {
-                                    <li>@member.FullName</li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
+        <div class="col-4">
+            <!--
+            <div class="box p-3">
+                <div class="overflow-hidden image-fit">
+                    <img src="@_fileService.ConvertByteArrayToFile(Model.ImageFileData!,Model.ImageFileType!,DefaultImage.ProjectImage)"/>
                 </div>
             </div>
+            -->
         </div>
-        @* Only show the "manage project members" button if they're allowed to assign members to this project *@
-        @if(true)
+    </div>
+
+    <div class="d-flex mt-8 align-items-center">
+        <span class="fs-lg fw-medium mt-3">Project Members</span>
+        @if (User.IsInRole(nameof(BTRoles.Admin)))
         {
-            <div class="col-12">
-                <div class="d-flex flex-column align-items-stretch align-items-lg-end">
-                    <a href="#" class="btn btn-secondary btn-sm">
-                        Manage Project Members
-                    </a>
+            <span class="ms-5"><a href="javascript:;" data-bs-toggle="modal" data-bs-target="#assignpm-modal" class="btn btn-rounded-primary mt-3">Assign Project Manager</a></span>
+        }
+        @if (User.IsInRole(nameof(BTRoles.Admin)) || (User.IsInRole(nameof(BTRoles.ProjectManager)) && pm is not null && pm.Id == _userManager.GetUserId(User)))
+        {
+            <span class="ms-5"><a asp-controller="Projects" asp-action="EditMembers" asp-route-id="@Model.Id" class="btn btn-rounded-primary mt-3">Edit Members</a></span>
+        }
+    </div>
+    <div class="row row-cols-4 g-3 mt-3">
+        @if(pm is not null)
+        {
+            <div class="col"> 
+                <div class="box p-4 d-flex align-items-center">
+                    <div class="me-auto fw-medium">@pm.FullName</div>
+                    <div class="px-1 py-2 rounded-pill fs-xs text-white bg-dark">Project Manager</div>
                 </div>
             </div>
         }
+        else
+        {
+            <div class="col">
+                <div class="box p-4 d-flex align-items-center">
+                    <div class="me-auto fw-medium text-danger">Unassigned</div>
+                    <div class="px-1 py-2 rounded-pill fs-xs text-white bg-dark">Project Manager</div>
+                </div>
+            </div>
+        }
+        @foreach(BTUser member in Model.Members)
+        {
+            if(await _roleService.IsUserInRole(member, nameof(BTRoles.Submitter)))
+            {
+                <div class="col">
+                    <div class="box p-4 d-flex align-items-center">
+                        <div class="me-auto fw-medium">@member.FullName</div>
+                        <div class="px-1 py-2 rounded-pill fs-xs text-white bg-success">Submitter</div>
+                    </div>
+                </div>
+            }
+            else if (await _roleService.IsUserInRole(member, nameof(BTRoles.Developer)))
+            {
+                <div class="col">
+                    <div class="col box p-4 d-flex align-items-center">
+                        <div class="me-auto fw-medium">@member.FullName</div>
+                        <div class="px-1 py-2 rounded-pill fs-xs text-white bg-info">Developer</div>
+                    </div>
+                </div>
+            }
+        }
     </div>
-    <div class="table-responsive mt-4">
-        <table class="table table-hover table-bordered text-center no-wrap" id="ticketTable">
-            @* TICKETS TABLE: Links to Ticket Details*@
-            <tr>
-                <td>
-                    Project Tickets Go Here
-                </td>
-            </tr>
+
+    <div class="d-flex mt-8 align-items-center">
+        <span class="fs-lg fw-medium mt-3">Project Tickets</span>
+        @if (User.IsInRole(nameof(BTRoles.Admin)) || Model.Members.Any(m => m.Id == _userManager.GetUserId(User)))
+        {
+            <span class="ms-5"><a asp-controller="Tickets" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-rounded-primary mt-3">New Ticket</a></span>
+        }
+    </div>
+    <div class="grid columns-12 gap-6 mt-3">
+        <table class="table table-report">
+            <thead>
+                <tr>
+                    <th class="border-bottom-0 text-nowrap">Project</th>
+                    <th class="border-bottom-0 text-nowrap">Title</th>
+                    <th class="border-bottom-0 text-nowrap">Status</th>
+                    <th class="border-bottom-0 text-nowrap">Submitter</th>
+                    <th class="border-bottom-0 text-nowrap">Developer</th>
+                    <th class="border-bottom-0 text-nowrap"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Ticket ticket in Model.Tickets)
+                {
+                    <tr class="text-nowrap">
+                        <td>@ticket.Project!.Name</td>
+                        <td>@ticket.Title</td>
+                        <td>@ticket.TicketStatus!.Name</td>
+                        @{
+                            BTUser? sub = ticket.SubmitterUser;
+                        }
+                        @if (sub is null)
+                        {
+                            <td>None</td>
+                        }
+                        else
+                        {
+                            <td>@sub.FullName</td>
+                        }
+                        @{
+                            BTUser? dev = ticket.DeveloperUser;
+                        }
+                        @if (dev is null)
+                        {
+                            <td class="text-danger">Unassigned</td>
+                        }
+                        else
+                        {
+                            <td>@dev.FullName</td>
+                        }
+                        <td>
+                            <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-rounded-success me-1 mb-2">Details</a>
+                            @if (User.IsInRole(nameof(BTRoles.Admin)) || (User.IsInRole(nameof(BTRoles.ProjectManager)) && pm is not null && pm.Id == _userManager.GetUserId(User)))
+                            {
+                                if (ticket.Archived)
+                                {
+                                    <a asp-controller="Tickets" asp-action="Restore" asp-route-id="@ticket.Id" class="btn btn-rounded-dark me-1 mb-2">Restore</a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Tickets" asp-action="Archive" asp-route-id="@ticket.Id" class="btn btn-rounded-danger me-1 mb-2">Archive</a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
         </table>
     </div>
-    <div class="mt-5 ms-auto">
-        <a asp-action="Index" class="btn btn-dark">Back to List</a>
-    </div>
 </div>
+
+<!-- BEGIN: Modal Content -->
+<div id="assignpm-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @{
+                List<BTUser> projectManagers = await _roleService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), User.Identity!.GetCompanyId());
+                BTUser? currentPM = await _projectService.GetProjectManagerAsync(Model.Id, User.Identity!.GetCompanyId());
+                SelectList PMList = new SelectList(projectManagers, "Id", "FullName", currentPM?.Id);
+            }
+            <form asp-action="AssignPM" method="post" class="d-flex flex-column">
+                <!-- BEGIN: Modal Header -->
+                <div class="modal-header">
+                    <h2 class="fw-medium fs-base">Assign Developer</h2>
+                </div> <!-- END: Modal Header -->
+                <!-- BEGIN: Modal Body -->
+                <div class="modal-body grid columns-12 gap-4 gap-y-3">
+                    
+                <input type="hidden" name="projectId" value="@Model.Id" />
+                <select class="form-select" asp-items="PMList" name="PMId">
+                    <option value="">Unassigned</option>
+                </select>
+                </div> <!-- END: Modal Body -->
+                <!-- BEGIN: Modal Footer -->
+                <div class="modal-footer text-end"> <button type="button" data-bs-dismiss="modal" class="btn btn-outline-secondary w-20 me-1">Cancel</button> <button type="submit" class="btn btn-primary w-20">Save</button> </div> <!-- END: Modal Footer -->
+            </form>
+        </div>
+    </div>
+</div> <!-- END: Modal Content -->
+<!-- BEGIN: Modal Content -->
+<div id="editmem-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @{
+                List<BTUser> members = await _companyService.GetCompanyMembersAsync(User.Identity!.GetCompanyId());
+                List<BTUser> current = new();
+                List<BTUser> unassigned = new();
+
+                foreach (BTUser member in members)
+                {
+                    if (await _roleService.IsUserInRole(member, nameof(BTRoles.Developer)) || await _roleService.IsUserInRole(member, nameof(BTRoles.Submitter)))
+                    {
+                        if (Model.Members.Contains(member))
+                        {
+                            current.Add(member);
+                        }
+                        else
+                        {
+                            unassigned.Add(member);
+                        }
+                    }
+                }
+
+                SelectList currentList = new SelectList(current, "Id", "FullName");
+                SelectList unassignedList = new SelectList(unassigned, "Id", "FullName");
+            }
+            <form asp-action="AssignPM" method="post" class="d-flex flex-column">
+                <!-- BEGIN: Modal Header -->
+                <div class="modal-header">
+                    <h2 class="fw-medium fs-base">Assign Developer</h2>
+                </div> <!-- END: Modal Header -->
+                <!-- BEGIN: Modal Body -->
+                <div class="modal-body grid columns-12 gap-4 gap-y-3">
+
+                    <div class="row row-cols-2">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">Add Members</div>
+                                </div>
+                                <div class="card-body">
+                                    <form asp-action="EditMembers" method="post" class="d-flex flex-column">
+                                        <input type="hidden" name="projectId" value="@Model.Id" />
+                                        <select class="form-select" asp-items="unassignedList" name="memberId">
+                                            <option value="">Potential Members</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary my-3">Add</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">Remove Members</div>
+                                </div>
+                                <div class="card-body">
+                                    <form asp-action="EditMembers" method="post" class="d-flex flex-column">
+                                        <input type="hidden" name="projectId" value="@Model.Id" />
+                                        <select class="form-select" asp-items="currentList" name="memberId">
+                                            <option value="">Current Members</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary my-3">Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- END: Modal Body -->
+                <!-- BEGIN: Modal Footer -->
+                <div class="modal-footer text-end"> <button type="button" data-bs-dismiss="modal" class="btn btn-outline-secondary w-20 me-1">Cancel</button> </div> <!-- END: Modal Footer -->
+            </form>
+        </div>
+    </div>
+</div> <!-- END: Modal Content -->
