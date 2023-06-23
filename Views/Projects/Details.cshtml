@@ -259,7 +259,7 @@
                                     <div class="card-title">Add Members</div>
                                 </div>
                                 <div class="card-body">
-                                    <form asp-action="EditMembers" method="post" class="d-flex flex-column">
+                                    <form asp-controller="Projects" asp-action="EditMembers" method="post">
                                         <input type="hidden" name="projectId" value="@Model.Id" />
                                         <select class="form-select" asp-items="unassignedList" name="memberId">
                                             <option value="">Potential Members</option>
@@ -275,7 +275,7 @@
                                     <div class="card-title">Remove Members</div>
                                 </div>
                                 <div class="card-body">
-                                    <form asp-action="EditMembers" method="post" class="d-flex flex-column">
+                                    <form asp-controller="Projects" asp-action="EditMembers" method="post">
                                         <input type="hidden" name="projectId" value="@Model.Id" />
                                         <select class="form-select" asp-items="currentList" name="memberId">
                                             <option value="">Current Members</option>
